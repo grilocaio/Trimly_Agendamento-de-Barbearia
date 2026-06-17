@@ -2,12 +2,12 @@
     <section class="imagens">
         <SectionTitles subtitle="Barbearias Cadastradas em nosso Sistema" title="Nossas Barbearias" />
         
-        <nav class="lg:flex justify-center items-center flex-wrap pt-8 lg:px-16 px-6 grid grid-cols-3">
+        <nav class="flex justify-center gap-4">
             <a v-for="cat in categories" :key="cat" href="#" @click.prevent="selectedCategory = cat" :class="[
                 'text-center text-lg pb-1 border-b-2 pb-4 lg:pb-0 lg:px-8',
                 selectedCategory === cat
-                    ? 'text-[#8D6D25] font-bold border-[#8D6D25]'
-                    : 'border-transparent hover:text-[#8D6D25]'
+                    ? 'text-red-800 font-bold border-red-800'
+                    : 'border-transparent hover:text-red-800'
             ]">
                 {{ cat }}
             </a>
@@ -26,8 +26,8 @@
                             <h1 class="text-white text-3xl font-bold">
                                 {{ item.title }}
                             </h1>
-                            <p class="text-[#8D6D25] font-bold text-lg">
-                                ★ 5.0
+                            <p class="text-red-800 font-bold text-lg">
+                                ★ <span class="text-white">5.0</span>
                             </p>
                         </div>
                         <p class="text-gray-300 text-lg">
@@ -35,7 +35,7 @@
                         </p>
                     </div>
                     
-                    <button @click="$emit('verBarbearia', item.id)" class="flex items-center justify-between gap-4 bg-[#8D6D25] hover:bg-[#73591f] transition-colors text-white py-3 px-6 cursor-pointer">
+                    <button @click="$emit('verBarbearia', item.id)" class="flex items-center justify-between gap-4 bg-red-800 hover:bg-red-900 transition-colors text-white py-3 px-6 cursor-pointer">
                         <p class="text-lg">Ver Barbearia</p>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                             stroke="currentColor" class="w-4 h-4">

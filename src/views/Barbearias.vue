@@ -2,7 +2,7 @@
     <div class="bg-white py-16 px-4 lg:px-16 w-full min-h-screen">
         
         <div class="text-center mb-12">
-            <p class="text-[#8D6D25] font-semibold text-sm tracking-widest uppercase mb-2">
+            <p class="text-red-800 font-semibold text-sm tracking-widest uppercase mb-2">
                 As melhores opções da região
             </p>
             <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
@@ -18,7 +18,7 @@
                 :class="[
                     'text-sm font-medium transition-colors cursor-pointer', 
                     abaAtiva === aba 
-                        ? 'text-[#8D6D25] border-b-2 border-[#8D6D25] pb-4 -mb-[17px]' 
+                        ? 'text-red-800 border-b-2 border-red-800 pb-4 -mb-[17px]' 
                         : 'text-gray-500 hover:text-gray-900'
                 ]"
             >
@@ -52,7 +52,7 @@
         </div>
 
         <div class="mt-16 text-center">
-            <button @click="$emit('voltar')" class="px-6 py-3 bg-black text-white font-semibold hover:bg-[#8D6D25] transition-colors rounded">
+            <button @click="$emit('voltar')" class="px-6 py-3 bg-black text-white font-semibold hover:bg-red-800 transition-colors rounded">
                 Voltar para a Busca
             </button>
         </div>

@@ -12,13 +12,13 @@
                 </div>
 
                 <nav class="hidden lg:flex items-center justify-center gap-8 col-span-8 text-white font-medium">
-                    <a href="#" class="hover:text-[#8D6D25] transition-colors">Home</a>
-                    <a href="#" class="hover:text-[#8D6D25] transition-colors">Barbearias</a>
-                    <a href="#" class="hover:text-[#8D6D25] transition-colors">About Us</a>
+                    <a href="#" class="hover:text-red-800 transition-colors">Home</a>
+                    <a href="#" class="hover:text-red-800 transition-colors">Barbearias</a>
+                    <a href="#" class="hover:text-red-800 transition-colors">About Us</a>
                 </nav>
 
                 <div class="flex items-center justify-end px-4 lg:hidden">
-                    <button class="flex items-center justify-center bg-[#8D6D25] rounded-lg p-2" @click="abrirMenu">
+                    <button class="flex items-center justify-center bg-red-800 rounded-lg p-2" @click="abrirMenu">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-8 h-8" fill="none">
                             <path d="M10 17H38" stroke="white" stroke-width="3" stroke-linecap="round" />
                             <path d="M10 24H38" stroke="white" stroke-width="3" stroke-linecap="round" />
@@ -61,9 +61,9 @@
             <button @click="fecharMenu" class="text-gray-500 hover:text-black mb-8 font-bold">X Fechar</button>
 
             <nav class="flex flex-col gap-6">
-                <a href="#" class="font-medium hover:text-[#8D6D25]">Home</a>
-                <a href="#" class="font-medium hover:text-[#8D6D25]">Barbearias</a>
-                <a href="#" class="font-medium hover:text-[#8D6D25]">About Us</a>
+                <a href="#" class="font-medium hover:text-red-800">Home</a>
+                <a href="#" class="font-medium hover:text-red-800">Barbearias</a>
+                <a href="#" class="font-medium hover:text-red-800">About Us</a>
                 
                 <hr class="border-gray-200">
                 
