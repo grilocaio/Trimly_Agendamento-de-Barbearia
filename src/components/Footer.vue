@@ -3,7 +3,7 @@
         <footer class="mt-24">
             <div class="relative w-full lg:h-[160px] h-[260px] overflow-hidden">
 
-                <div class="hidden lg:block absolute top-1 left-0 w-[45%] h-full brightness-40 bg-cover bg-center z-10 [clip-path:polygon(0_0,80%_0,100%_100%,0%_100%)]" :style=" {backgroundImage : `url(${imgFooter})`}">
+                <div class="hidden lg:block absolute top-1 left-0 w-[45%] h-full brightness-70 bg-cover  z-10 [clip-path:polygon(0_0,80%_0,100%_100%,0%_100%)]" :style=" {backgroundImage : `url(${imgFooter})`}">
                 </div>
 
                 <div class="w-full h-full lg:h-[140px] bg-red-800 lg:absolute bottom-0 right-0 grid grid-cols-1 lg:grid-cols-2">
