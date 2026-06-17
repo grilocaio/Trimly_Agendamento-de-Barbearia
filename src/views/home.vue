@@ -4,16 +4,17 @@
       @abrirLogin="telaAtual = 'login'" 
       @sair="fazerLogout" 
   />
-  
   <div v-if="telaAtual === 'home'">
       <Hero @buscar="irParaBusca" />
+      <br>
+      <Cards/>
       <Imagens />
-  </div>
-
-  <Barbearias 
-      v-if="telaAtual === 'Barbearias'" 
-      @voltar="telaAtual = 'home'"
-      :cidade="cidadeDaBusca" 
+    </div>
+    
+    <Barbearias 
+    v-if="telaAtual === 'Barbearias'" 
+    @voltar="telaAtual = 'home'"
+    :cidade="cidadeDaBusca" 
       :estado="estadoDaBusca" 
   />
 
@@ -22,7 +23,6 @@
       @voltar="telaAtual = 'home'" 
       @loginSucesso="entrarNoSistema"
   />
-
   <Footer />
 </template>
 
@@ -34,6 +34,7 @@ import Imagens from '@/layouts/Imagens.vue';
 import Footer from '@/components/Footer.vue';
 import Barbearias from '@/views/Barbearias.vue'; 
 import Login from '@/views/Login.vue';
+import Cards from '@/layouts/Cards.vue';
 
 const telaAtual = ref('home');
 const estadoDaBusca = ref('');
