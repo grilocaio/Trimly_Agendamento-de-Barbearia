@@ -143,7 +143,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, defineProps, defineEmits } from 'vue';
-import { getAgendamentos, saveAgendamentos, getBarbearias, getHorarios, isBarbeiroDisponivel } from '@/utils/storage';
+import { bookingService } from '@/services';
 
 const props = defineProps({
     usuarioLogado: Object
@@ -186,19 +186,27 @@ const agendamentosFiltrados = computed(() => {
         });
 });
 
-onMounted(() => {
-    // Carrega o nome da barbearia associada
-    const barbearias = getBarbearias();
-    const b = barbearias.find(x => x.id === Number(props.usuarioLogado.barbeariaId));
-    barbeariaNome.value = b ? b.nome : 'Nossa Barbearia';
+onMounted(async () => {
+    try {
+        // Carrega o nome da barbearia associada
+        const barbearias = await bookingService.getBarbearias();
+        const b = barbearias.find(x => x.id === Number(props.usuarioLogado.barbeariaId));
+        barbeariaNome.value = b ? b.nome : 'Nossa Barbearia';
 
-    listagemHorariosFixos.value = getHorarios();
+        listagemHorariosFixos.value = await bookingService.getHorarios();
 
-    carregarAgenda();
+        await carregarAgenda();
+    } catch (e) {
+        console.error("Erro ao carregar dados do barbeiro:", e);
+    }
 });
 
-function carregarAgenda() {
-    todosAgendamentos.value = getAgendamentos();
+async function carregarAgenda() {
+    try {
+        todosAgendamentos.value = await bookingService.getAgendamentos();
+    } catch (e) {
+        console.error("Erro ao carregar agenda:", e);
+    }
 }
 
 function formatarData(dataStr) {
@@ -209,78 +217,68 @@ function formatarData(dataStr) {
 }
 
 // Ação 1: Concluir corte/atendimento
-function concluirAtendimento(id) {
-    const todos = getAgendamentos();
-    const idx = todos.findIndex(a => a.id === id);
-    if (idx !== -1) {
-        todos[idx].status = 'Concluído';
-        saveAgendamentos(todos);
+async function concluirAtendimento(id) {
+    try {
+        await bookingService.concluirAtendimento(id);
         alert("Atendimento finalizado com sucesso!");
-        carregarAgenda();
+        await carregarAgenda();
+    } catch (e) {
+        alert(e.message);
     }
 }
 
 // Ação 2: Cancelar atendimento
-function cancelarAtendimento(id) {
+async function cancelarAtendimento(id) {
     if (!confirm("Tem certeza que deseja cancelar este agendamento?")) {
         return;
     }
 
-    const todos = getAgendamentos();
-    const idx = todos.findIndex(a => a.id === id);
-    if (idx !== -1) {
-        todos[idx].status = 'Cancelado';
-        saveAgendamentos(todos);
+    try {
+        await bookingService.cancelarAgendamento(id);
         alert("Agendamento cancelado!");
-        carregarAgenda();
+        await carregarAgenda();
+    } catch (e) {
+        alert(e.message);
     }
 }
 
 // Ação 3: Reagendamento
-function abrirPainelReagendar(ag) {
+async function abrirPainelReagendar(ag) {
     reagendamentoAtivoId.value = ag.id;
     formReagenda.data = ag.data;
     formReagenda.horario = ag.horario;
-    carregarHorariosReagenda(ag);
+    await carregarHorariosReagenda(ag);
 }
 
-function carregarHorariosReagenda(ag) {
+async function carregarHorariosReagenda(ag) {
     if (!formReagenda.data) {
         horariosDisponiveisReagenda.value = [];
         return;
     }
 
-    horariosDisponiveisReagenda.value = listagemHorariosFixos.value.filter(hora => {
-        // Valida disponibilidade, ignorando a si mesmo
-        return isBarbeiroDisponivel(props.usuarioLogado.id, formReagenda.data, hora, ag.id);
-    });
+    try {
+        const slots = await bookingService.getSlotsDisponiveis(props.usuarioLogado.id, formReagenda.data, ag.id);
+        horariosDisponiveisReagenda.value = slots
+            .filter(s => s.disponivel)
+            .map(s => s.hora);
+    } catch (e) {
+        console.error("Erro ao carregar horários para reagendar:", e);
+    }
 }
 
-function salvarReagendamento(id) {
+async function salvarReagendamento(id) {
     if (!formReagenda.data || !formReagenda.horario) {
         alert("Selecione data e horário válidos.");
         return;
     }
 
-    const todos = getAgendamentos();
-    const idx = todos.findIndex(a => a.id === id);
-    if (idx !== -1) {
-        const ag = todos[idx];
-        
-        const disponivel = isBarbeiroDisponivel(props.usuarioLogado.id, formReagenda.data, formReagenda.horario, ag.id);
-        if (!disponivel) {
-            alert("Você já possui um agendamento nesse horário. Escolha outro slot.");
-            return;
-        }
-
-        todos[idx].data = formReagenda.data;
-        todos[idx].horario = formReagenda.horario;
-        todos[idx].status = 'Agendado'; // Reativa agendamento caso estivesse em outro status
-        
-        saveAgendamentos(todos);
+    try {
+        await bookingService.reagendar(id, formReagenda.data, formReagenda.horario);
         alert("Agendamento reagendado com sucesso!");
         reagendamentoAtivoId.value = null;
-        carregarAgenda();
+        await carregarAgenda();
+    } catch (e) {
+        alert(e.message);
     }
 }
 </script>

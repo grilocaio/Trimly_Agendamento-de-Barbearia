@@ -4,7 +4,7 @@
             
             <!-- Botão de Voltar -->
             <button @click="$emit('voltar')" class="mb-8 flex items-center gap-2 text-gray-600 hover:text-red-800 transition-colors font-semibold cursor-pointer">
-                ← Voltar para Barbearias
+                ← Voltar para {{ origem === 'home' ? 'o Início' : 'Barbearias' }}
             </button>
 
             <!-- Card de Detalhes da Barbearia -->
@@ -147,11 +147,15 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, defineProps, defineEmits } from 'vue';
-import { getUsuarios, getCortes, getHorarios, getAgendamentos, saveAgendamentos, isBarbeiroDisponivel } from '@/utils/storage';
+import { authService, bookingService } from '@/services';
 
 const props = defineProps({
     barbearia: Object,
-    usuarioLogado: Object
+    usuarioLogado: Object,
+    origem: {
+        type: String,
+        default: 'Barbearias'
+    }
 });
 
 const emit = defineEmits(['voltar', 'irParaLogin', 'agendamentoSucesso']);
@@ -159,7 +163,6 @@ const emit = defineEmits(['voltar', 'irParaLogin', 'agendamentoSucesso']);
 // Estado de dados locais
 const barbeiros = ref([]);
 const cortes = ref([]);
-const horarios = ref([]);
 const listaHorariosComStatus = ref([]);
 
 // Formulário reativo
@@ -185,20 +188,23 @@ const barbeiroSelecionadoNome = computed(() => {
     return b ? b.nome : '';
 });
 
-onMounted(() => {
-    // Carregar barbeiros da barbearia atual
-    const todosUsuarios = getUsuarios();
-    barbeiros.value = todosUsuarios.filter(
-        u => u.cargo === 'Barbeiro' && Number(u.barbeariaId) === Number(props.barbearia.id)
-    );
+onMounted(async () => {
+    try {
+        // Carregar barbeiros da barbearia atual
+        const todosUsuarios = await authService.userRepository.getUsuarios();
+        barbeiros.value = todosUsuarios.filter(
+            u => u.cargo === 'Barbeiro' && Number(u.barbeariaId) === Number(props.barbearia.id)
+        );
 
-    // Carregar cortes e horários do banco
-    cortes.value = getCortes();
-    horarios.value = getHorarios();
+        // Carregar cortes e horários do banco
+        cortes.value = await bookingService.getCortes(props.barbearia.id);
+    } catch (e) {
+        console.error("Erro ao carregar detalhes da barbearia:", e);
+    }
 });
 
 // Carrega horários disponíveis e marca os ocupados
-function carregarHorariosDisponiveis() {
+async function carregarHorariosDisponiveis() {
     if (!form.barbeiroId || !form.data) {
         listaHorariosComStatus.value = [];
         return;
@@ -207,59 +213,47 @@ function carregarHorariosDisponiveis() {
     // Limpa horário anterior selecionado se mudar barbeiro ou data
     form.horario = '';
 
-    listaHorariosComStatus.value = horarios.value.map(hora => {
-        const disponivel = isBarbeiroDisponivel(form.barbeiroId, form.data, hora);
-        return {
-            hora,
-            disponivel
-        };
-    });
+    try {
+        listaHorariosComStatus.value = await bookingService.getSlotsDisponiveis(form.barbeiroId, form.data);
+    } catch (e) {
+        console.error("Erro ao carregar horários disponíveis:", e);
+    }
 }
 
 // Submeter o agendamento
-function fazerAgendamento() {
+async function fazerAgendamento() {
     if (!form.barbeiroId || !form.corteId || !form.data || !form.horario) {
         alert("Preencha todos os campos obrigatórios e escolha um horário disponível.");
         return;
     }
 
-    // Validar novamente no banco de dados se o horário não foi reservado nesse meio tempo
-    const disponivel = isBarbeiroDisponivel(form.barbeiroId, form.data, form.horario);
-    if (!disponivel) {
-        alert("Desculpe, esse horário acabou de ser reservado por outra pessoa. Selecione outro horário.");
-        carregarHorariosDisponiveis();
-        return;
-    }
-
-    const todosAgendamentos = getAgendamentos();
-
     // Detalhes do barbeiro e corte selecionados
     const barbeiro = barbeiros.value.find(x => x.id === Number(form.barbeiroId));
     const corte = cortes.value.find(x => x.id === Number(form.corteId));
 
-    const novoAgendamento = {
-        id: Date.now(),
-        clienteId: props.usuarioLogado.id,
-        clienteNome: props.usuarioLogado.nome,
-        barbeiroId: Number(form.barbeiroId),
-        barbeiroNome: barbeiro.nome,
-        barbeariaId: Number(props.barbearia.id),
-        barbeariaNome: props.barbearia.nome,
-        corteId: Number(form.corteId),
-        corteNome: corte.descCorte,
-        valor: corte.valor,
-        data: form.data,
-        horario: form.horario,
-        status: 'Agendado',
-        descricao: form.descricao
-    };
+    try {
+        await bookingService.fazerAgendamento({
+            clienteId: props.usuarioLogado.id,
+            clienteNome: props.usuarioLogado.nome,
+            barbeiroId: Number(form.barbeiroId),
+            barbeiroNome: barbeiro.nome,
+            barbeariaId: Number(props.barbearia.id),
+            barbeariaNome: props.barbearia.nome,
+            corteId: Number(form.corteId),
+            corteNome: corte.descCorte,
+            valor: corte.valor,
+            data: form.data,
+            horario: form.horario,
+            descricao: form.descricao
+        });
 
-    todosAgendamentos.push(novoAgendamento);
-    saveAgendamentos(todosAgendamentos);
-
-    alert(`Agendamento realizado com sucesso para o dia ${form.data} às ${form.horario} com o barbeiro ${barbeiro.nome}!`);
-    
-    // Emitir sucesso
-    emit('agendamentoSucesso');
+        alert(`Agendamento realizado com sucesso para o dia ${form.data} às ${form.horario} com o barbeiro ${barbeiro.nome}!`);
+        
+        // Emitir sucesso
+        emit('agendamentoSucesso');
+    } catch (error) {
+        alert(error.message);
+        await carregarHorariosDisponiveis();
+    }
 }
 </script>

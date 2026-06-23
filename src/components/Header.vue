@@ -1,5 +1,8 @@
 <template>
-    <header>
+    <header :class="[
+        'sticky top-0 z-50 w-full transition-transform duration-300',
+        isHidden ? '-translate-y-full' : 'translate-y-0'
+    ]">
         <div class="bg-white border-b border-b-gray-200 lg:border-b-0 h-20 w-full lg:bg-black">
             <div class="flex justify-between h-20 lg:grid grid-cols-12">
                 
@@ -94,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps } from 'vue';
+import { ref, onMounted, onUnmounted, defineEmits, defineProps } from 'vue';
 import logo from '@/assets/imgTrimly.png';
 import Button from './Button.vue';
 
@@ -104,6 +107,8 @@ const props = defineProps({
 
 const emit = defineEmits(['abrirLogin', 'sair', 'navegar']);
 const menuAberto = ref(false);
+const isHidden = ref(false);
+let lastScrollY = 0;
 
 function abrirMenu() {
     menuAberto.value = true;
@@ -112,4 +117,32 @@ function abrirMenu() {
 function fecharMenu() {
     menuAberto.value = false;
 }
+
+function handleScroll() {
+    const currentScrollY = window.scrollY;
+    
+    // Mantém sempre visível se estiver muito próximo ao topo
+    if (currentScrollY <= 50) {
+        isHidden.value = false;
+        lastScrollY = currentScrollY;
+        return;
+    }
+
+    if (currentScrollY > lastScrollY) {
+        // Deslizar para baixo -> Esconder Header
+        isHidden.value = true;
+    } else {
+        // Deslizar para cima -> Mostrar Header
+        isHidden.value = false;
+    }
+    lastScrollY = currentScrollY;
+}
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
 </script>

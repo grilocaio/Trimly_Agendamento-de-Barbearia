@@ -76,7 +76,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, defineProps, defineEmits } from 'vue';
-import { getUsuarios, saveUsuarios } from '@/utils/storage';
+import { authService } from '@/services';
 
 const props = defineProps({
     usuarioLogado: Object
@@ -95,52 +95,24 @@ onMounted(() => {
     form.telefone = props.usuarioLogado.telefone || '';
 });
 
-function salvarPerfil() {
-    // Validar senha atual
-    if (form.senhaAtual !== props.usuarioLogado.senha) {
-        alert("Erro: A senha atual digitada está incorreta.");
+async function salvarPerfil() {
+    // Validar confirmação localmente
+    if (form.novaSenha && form.novaSenha !== form.confirmarNovaSenha) {
+        alert("Erro: A confirmação da nova senha não confere.");
         return;
     }
 
-    // Validar nova senha se digitada
-    if (form.novaSenha) {
-        if (form.novaSenha.length < 3) {
-            alert("Erro: A nova senha deve ter pelo menos 3 caracteres.");
-            return;
-        }
-        if (form.novaSenha !== form.confirmarNovaSenha) {
-            alert("Erro: A confirmação da nova senha não confere.");
-            return;
-        }
+    try {
+        const usuarioAtualizado = await authService.updateProfile(props.usuarioLogado.id, {
+            telefone: form.telefone,
+            senhaAtual: form.senhaAtual,
+            novaSenha: form.novaSenha
+        });
+        alert("Perfil atualizado com sucesso!");
+        emit('perfilAtualizado', usuarioAtualizado);
+        emit('voltar');
+    } catch (error) {
+        alert(error.message);
     }
-
-    const usuarios = getUsuarios();
-    const index = usuarios.findIndex(u => u.id === props.usuarioLogado.id);
-    
-    if (index === -1) {
-        alert("Erro: Usuário não encontrado no banco de dados.");
-        return;
-    }
-
-    // Atualiza telefone
-    usuarios[index].telefone = form.telefone;
-
-    // Atualiza senha se fornecido
-    if (form.novaSenha) {
-        usuarios[index].senha = form.novaSenha;
-    }
-
-    // Salvar no local storage
-    saveUsuarios(usuarios);
-
-    // Atualiza sessão ativa
-    const usuarioAtualizado = usuarios[index];
-    localStorage.setItem('trimly_logado_user', JSON.stringify(usuarioAtualizado));
-    localStorage.setItem('trimly_logado', usuarioAtualizado.nome);
-
-    alert("Perfil atualizado com sucesso!");
-    
-    emit('perfilAtualizado', usuarioAtualizado);
-    emit('voltar');
 }
 </script>

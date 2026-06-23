@@ -85,7 +85,7 @@
 
 <script setup>
 import { ref, onMounted, defineProps, defineEmits } from 'vue';
-import { getAgendamentos, saveAgendamentos } from '@/utils/storage';
+import { bookingService } from '@/services';
 
 const props = defineProps({
     usuarioLogado: Object
@@ -95,20 +95,24 @@ const emit = defineEmits(['voltar']);
 
 const meusAgendamentos = ref([]);
 
-onMounted(() => {
-    carregarAgendamentos();
+onMounted(async () => {
+    await carregarAgendamentos();
 });
 
-function carregarAgendamentos() {
-    const todos = getAgendamentos();
-    // Filtra agendamentos do cliente logado e ordena por data e hora decrescente (mais recentes primeiro)
-    meusAgendamentos.value = todos
-        .filter(a => a.clienteId === props.usuarioLogado.id)
-        .sort((a, b) => {
-            const dataA = new Date(`${a.data}T${a.horario}`);
-            const dataB = new Date(`${b.data}T${b.horario}`);
-            return dataB - dataA;
-        });
+async function carregarAgendamentos() {
+    try {
+        const todos = await bookingService.getAgendamentos();
+        // Filtra agendamentos do cliente logado e ordena por data e hora decrescente (mais recentes primeiro)
+        meusAgendamentos.value = todos
+            .filter(a => Number(a.clienteId) === Number(props.usuarioLogado.id))
+            .sort((a, b) => {
+                const dataA = new Date(`${a.data}T${a.horario}`);
+                const dataB = new Date(`${b.data}T${b.horario}`);
+                return dataB - dataA;
+            });
+    } catch (e) {
+        console.error("Erro ao carregar agendamentos:", e);
+    }
 }
 
 function formatarData(dataStr) {
@@ -118,18 +122,17 @@ function formatarData(dataStr) {
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
-function cancelarAgendamento(id) {
+async function cancelarAgendamento(id) {
     if (!confirm("Tem certeza que deseja cancelar este agendamento? Esta ação não pode ser desfeita.")) {
         return;
     }
 
-    const todos = getAgendamentos();
-    const index = todos.findIndex(a => a.id === id);
-    if (index !== -1) {
-        todos[index].status = 'Cancelado';
-        saveAgendamentos(todos);
+    try {
+        await bookingService.cancelarAgendamento(id);
         alert("Agendamento cancelado com sucesso!");
-        carregarAgendamentos();
+        await carregarAgendamentos();
+    } catch (e) {
+        alert(e.message);
     }
 }
 </script>

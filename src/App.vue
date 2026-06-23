@@ -4,5 +4,4 @@ import home from '@/views/home.vue';
 
 <template>
   <home />
-  <aboutUs />
 </template>

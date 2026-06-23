@@ -81,7 +81,7 @@
 
 <script setup>
 import { ref, onMounted, defineEmits } from 'vue';
-import { getUsuarios, saveUsuarios, getBarbearias } from '@/utils/storage';
+import { authService, bookingService } from '@/services';
 
 const emit = defineEmits(['voltar', 'loginSucesso']);
 
@@ -103,73 +103,48 @@ const cadBarbeariaId = ref('');
 const logEmail = ref('');
 const logSenha = ref('');
 
-onMounted(() => {
-    barbearias.value = getBarbearias();
+onMounted(async () => {
+    try {
+        barbearias.value = await bookingService.getBarbearias();
+    } catch (e) {
+        console.error("Erro ao carregar barbearias:", e);
+    }
 });
 
 // FUNÇÃO 1: Salvar o Cadastro
-function fazerCadastro() {
-    const listaUsuarios = getUsuarios();
+async function fazerCadastro() {
+    try {
+        await authService.register({
+            nome: cadNome.value,
+            email: cadEmail.value,
+            senha: cadSenha.value,
+            telefone: cadTelefone.value,
+            cargo: cadCargo.value,
+            barbeariaId: cadCargo.value === 'Administrador' ? Number(cadBarbeariaId.value) : null
+        });
 
-    // Verifica se o e-mail já foi usado
-    const emailJaExiste = listaUsuarios.find(user => user.email.toLowerCase() === cadEmail.value.toLowerCase());
-    if (emailJaExiste) {
-        alert("Este e-mail já está cadastrado!");
-        return;
+        alert("Cadastro realizado com sucesso! Faça seu login.");
+        
+        // Limpa os campos e volta para a tela de login
+        cadNome.value = ''; 
+        cadTelefone.value = ''; 
+        cadEmail.value = ''; 
+        cadSenha.value = '';
+        cadCargo.value = 'Cliente';
+        cadBarbeariaId.value = '';
+        isCadastro.value = false; 
+    } catch (error) {
+        alert(error.message);
     }
-
-    // Se for Admin, valida se selecionou a barbearia
-    if (cadCargo.value === 'Administrador' && !cadBarbeariaId.value) {
-        alert("Por favor, selecione a barbearia que você gerenciará.");
-        return;
-    }
-
-    // Cria o pacote do novo usuário
-    const novoUsuario = {
-        id: Date.now(),
-        nome: cadNome.value,
-        telefone: cadTelefone.value,
-        email: cadEmail.value,
-        senha: cadSenha.value,
-        cargo: cadCargo.value,
-        barbeariaId: cadCargo.value === 'Administrador' ? Number(cadBarbeariaId.value) : null
-    };
-
-    // Adiciona na lista e salva no local storage
-    listaUsuarios.push(novoUsuario);
-    saveUsuarios(listaUsuarios);
-
-    alert("Cadastro realizado com sucesso! Faça seu login.");
-    
-    // Limpa os campos e volta para a tela de login
-    cadNome.value = ''; 
-    cadTelefone.value = ''; 
-    cadEmail.value = ''; 
-    cadSenha.value = '';
-    cadCargo.value = 'Cliente';
-    cadBarbeariaId.value = '';
-    isCadastro.value = false; 
 }
 
 // FUNÇÃO 2: Validar o Login
-function fazerLogin() {
-    const listaUsuarios = getUsuarios();
-
-    // Procura alguém que tenha o mesmo email E a mesma senha
-    const usuarioValido = listaUsuarios.find(
-        user => user.email.toLowerCase() === logEmail.value.toLowerCase() && user.senha === logSenha.value
-    );
-
-    if (usuarioValido) {
-        // Salva o objeto do usuário completo no local storage
-        localStorage.setItem('trimly_logado_user', JSON.stringify(usuarioValido));
-        
-        // Também mantém o legado 'trimly_logado' para compatibilidade básica
-        localStorage.setItem('trimly_logado', usuarioValido.nome);
-        
+async function fazerLogin() {
+    try {
+        const usuarioValido = await authService.login(logEmail.value, logSenha.value);
         emit('loginSucesso', usuarioValido);
-    } else {
-        alert("E-mail ou senha incorretos!");
+    } catch (error) {
+        alert(error.message);
     }
 }
 </script>
