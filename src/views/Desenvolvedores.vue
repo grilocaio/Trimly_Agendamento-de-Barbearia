@@ -24,57 +24,57 @@
                 <!-- Desenvolvedor 1 (col-span-12 no mobile, col-span-6 no tablet, col-span-4 no desktop) -->
                 <div class="col-span-12 sm:col-span-6 lg:col-span-4 bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md flex flex-col justify-between">
                     <div class="p-6">
-                        <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-800 text-3xl font-bold mb-4 mx-auto">
-                            👨‍💻
+                        <div>
+                            <img :src="caio" class="w-20 h-20 rounded-full mx-auto">
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 text-center">Alex Silva</h3>
-                        <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Lead Full Stack Developer</p>
+                        <h3 class="text-lg font-bold text-gray-900 text-center">Caio Grilo</h3>
+                        <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Estudante de ADS</p>
                         <p class="text-gray-500 text-xs text-center mt-4 leading-relaxed">
-                            Especialista em arquitetura de software e banco de dados. Responsável pela estruturação do back-end, modelagem das regras de negócio e controle de concorrência de agendamentos.
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis eaque aut, dolorem dicta voluptas modi! Nisi illo, eos aut accusamus, minima omnis doloribus necessitatibus magni cum minus animi libero voluptas.
                         </p>
                     </div>
                     <div class="bg-gray-50 p-4 border-t flex justify-center gap-4 text-xs text-gray-400">
-                        <span>GitHub: @alexdev</span>
+                        <span>GitHub: @grilocaio</span>
                         <span>|</span>
-                        <span>LinkedIn: /in/alexsilva</span>
+                        <span>LinkedIn: <a href="https://www.linkedin.com/in/caio-grilo/">/in/caio-grilo/</a></span>
                     </div>
                 </div>
 
                 <!-- Desenvolvedor 2 -->
                 <div class="col-span-12 sm:col-span-6 lg:col-span-4 bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md flex flex-col justify-between">
                     <div class="p-6">
-                        <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-800 text-3xl font-bold mb-4 mx-auto">
-                            👩‍💻
+                        <div>
+                            <img :src="henrique" class="w-20 h-20 rounded-full mx-auto">
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 text-center">Beatriz Costa</h3>
-                        <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Frontend UI/UX Engineer</p>
+                        <h3 class="text-lg font-bold text-gray-900 text-center">Henrique Zaianz</h3>
+                        <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Estudante de ADS</p>
                         <p class="text-gray-500 text-xs text-center mt-4 leading-relaxed">
                             Focada em design premium e experiência do usuário. Responsável pela criação das telas responsivas, estilização elegante com Tailwind CSS e transições fluidas da aplicação.
                         </p>
                     </div>
                     <div class="bg-gray-50 p-4 border-t flex justify-center gap-4 text-xs text-gray-400">
-                        <span>GitHub: @biacosta</span>
+                        <span>GitHub: @henriqmz</span>
                         <span>|</span>
-                        <span>LinkedIn: /in/beatrizc</span>
+                        <span>LinkedIn: <a href="https://www.linkedin.com/in/henrique-zaianz-881b4337b/?skipRedirect=true">/in/henrique-zaianz-881b4337b/</a></span>
                     </div>
                 </div>
 
                 <!-- Desenvolvedor 3 -->
                 <div class="col-span-12 sm:col-span-12 lg:col-span-4 bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md flex flex-col justify-between">
                     <div class="p-6">
-                        <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-800 text-3xl font-bold mb-4 mx-auto">
-                            👨‍💻
+                        <div>
+                            <img :src="kawan" class="w-20 h-20 rounded-full mx-auto">
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 text-center">Carlos Souza</h3>
-                        <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">DevOps & QA Engineer</p>
+                        <h3 class="text-lg font-bold text-gray-900 text-center">Kawan Mesquita</h3>
+                        <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Estudante de ADS</p>
                         <p class="text-gray-500 text-xs text-center mt-4 leading-relaxed">
                             Responsável por testes automatizados de segurança, deploy contínuo, integridade do LocalStorage e garantia de que a sincronização com APIs ocorra livre de falhas ou perdas de dados.
                         </p>
                     </div>
                     <div class="bg-gray-50 p-4 border-t flex justify-center gap-4 text-xs text-gray-400">
-                        <span>GitHub: @carlossouza</span>
+                        <span>GitHub: @kawanmt</span>
                         <span>|</span>
-                        <span>LinkedIn: /in/carloss</span>
+                        <span>LinkedIn: <a href="https://www.linkedin.com/in/caio-grilo/">/in/kawan-mesquita-83b053366/</a></span>
                     </div>
                 </div>
 
@@ -86,5 +86,8 @@
 
 <script setup>
 import { defineEmits } from 'vue';
+import caio from '@/assets/caio.jpg';
+import henrique from '@/assets/henrique.jpg';
+import kawan from '@/assets/kawan.jpg';
 const emit = defineEmits(['voltar']);
 </script>

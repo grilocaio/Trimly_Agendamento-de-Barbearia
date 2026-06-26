@@ -39,7 +39,7 @@
                     <div class="flex flex-col col-span-12 lg:col-span-4 gap-8">
                         <h1 class="text-white text-5xl font-bold">Trimly</h1>
                         <p class="text-gray-200 pt-8">
-                            O objetivo do Trimly é entregar um sistema de agendamento fácil de utilizar e eficiente, sem conflitos de horários.
+                            O objetivo do Trimly é entregar um sistema de agendamento fácil de utilizar e eficiente, sem conflitos de horários para valorizar e otimizar o seu tempo.
                         </p>
                     </div>
                     <div class="hidden lg:block lg:col-span-2"></div>

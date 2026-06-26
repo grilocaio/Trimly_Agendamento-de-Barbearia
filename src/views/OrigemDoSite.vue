@@ -14,7 +14,7 @@
                 </span>
                 <h1 class="text-4xl font-extrabold text-gray-950 mt-4 mb-3">Origem do Trimly</h1>
                 <p class="text-gray-500 text-sm max-w-xl mx-auto">
-                    Conheça a trajetória de como uma simples ideia revolucionou a forma de agendar atendimentos em barbearias de Jacareí e região.
+                    Conheça a trajetória de como uma simples ideia que surgiu a partir da necessidade de um barbeiro revolucionou a forma de agendar atendimentos em barbearias de Jacareí e região.
                 </p>
             </div>
 
@@ -24,10 +24,10 @@
                 <!-- Card Grande: A Inspiração (col-span-12) -->
                 <div class="col-span-12 bg-white rounded-xl p-6 lg:p-8 border border-gray-100 shadow-md">
                     <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-                        💡 A Inspiração
+                        A Inspiração
                     </h2>
                     <p class="text-gray-600 text-sm leading-relaxed mb-4">
-                        O Trimly nasceu da necessidade real observada tanto por clientes quanto por proprietários de barbearias. A frustração de enfrentar filas de espera intermináveis aos sábados, ou a dificuldade de coordenar horários através de mensagens de texto confusas, foram os combustíveis para a criação de uma solução integrada.
+                        O Trimly nasceu da necessidade de um barbeiro conhecido enfrentando dificuldades de usar seu celular travado por conta de inúmeras mensagens em seu Whatsapp, alem de ter que coordenar horários através de mensagens de texto confusas, foram os combustíveis para a criação de uma solução integrada.
                     </p>
                     <p class="text-gray-600 text-sm leading-relaxed">
                         Nossa meta principal sempre foi clara: criar um ecossistema simples de usar, extremamente confiável e transparente, eliminando qualquer tipo de conflito de agenda ou tempo desperdiçado no telefone.
@@ -38,10 +38,10 @@
                 <div class="col-span-12 md:col-span-6 bg-white rounded-xl p-6 border border-gray-100 shadow-md flex flex-col justify-between">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-                            🎯 Nossa Missão
+                            Nossa Objetivo
                         </h3>
                         <p class="text-gray-600 text-xs leading-relaxed">
-                            Facilitar a conexão entre barbeiros profissionais e clientes exigentes através de uma plataforma digital fluida, que valoriza o tempo de ambos os lados e eleva o padrão de atendimento no setor de estética masculina.
+                            Facilitar a conexão entre os barbeiros e seus clientes através de uma plataforma digital fluida, que valoriza o tempo de ambos os lados e eleva o padrão de atendimento no setor de estética masculina.
                         </p>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                 <div class="col-span-12 md:col-span-6 bg-white rounded-xl p-6 border border-gray-100 shadow-md flex flex-col justify-between">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-                            🚀 Nossa Visão
+                            Nossa Visão
                         </h3>
                         <p class="text-gray-600 text-xs leading-relaxed">
                             Ser a maior referência em soluções de agendamento e gerenciamento para o ramo da beleza em toda a região de Jacareí e Vale do Paraíba, expandindo constantemente os horizontes tecnológicos dos estabelecimentos parceiros.
@@ -61,13 +61,13 @@
                 <!-- Card Inferior: Valores (col-span-12) -->
                 <div class="col-span-12 bg-white rounded-xl p-6 border border-gray-100 shadow-md">
                     <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                        🤝 Nossos Valores
+                        Nossos Valores
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                         <div class="bg-gray-50 p-4 rounded-lg text-center">
-                            <span class="text-2xl block mb-2">⏱️</span>
+                            <span class="text-2xl block mb-2">🕒</span>
                             <h4 class="font-bold text-sm text-gray-800">Respeito ao Tempo</h4>
-                            <p class="text-gray-500 text-[11px] mt-1">Acreditamos que pontualidade e organização são os pilares de um serviço de elite.</p>
+                            <p class="text-gray-500 text-[11px] mt-1">Acreditamos que pontualidade e organização são os pilares de um serviço de qualidade.</p>
                         </div>
                         <div class="bg-gray-50 p-4 rounded-lg text-center">
                             <span class="text-2xl block mb-2">💻</span>

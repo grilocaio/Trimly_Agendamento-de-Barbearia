@@ -8,9 +8,9 @@
                 <span class="text-xs uppercase font-extrabold tracking-widest text-red-500 bg-red-950/50 px-3 py-1 rounded-full border border-red-900 relative z-10">
                     Parceria Trimly
                 </span>
-                <h1 class="text-3xl lg:text-4xl font-extrabold mt-4 relative z-10">Junte-se a Nós & Divulgue sua Barbearia</h1>
+                <h1 class="text-3xl lg:text-4xl font-extrabold mt-4 relative z-10">Cadastre sua Barbearia & Divulgue a para todos</h1>
                 <p class="text-gray-400 text-sm mt-2 max-w-xl mx-auto relative z-10">
-                    Faça parte da plataforma de agendamento mais moderna do país. Cadastre seu estabelecimento e impulsione suas reservas.
+                    Faça parte dessa plataforma de agendamento mais moderna do Vale. Cadastre seu estabelecimento e impulsione suas reservas.
                 </p>
             </div>
 
@@ -20,30 +20,30 @@
                 <!-- Seção 1: Como Funciona -->
                 <div class="space-y-4">
                     <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <span class="text-red-700">🚀</span> Como funciona a plataforma?
+                        Como funciona a plataforma?
                     </h2>
                     <p class="text-sm text-gray-600 leading-relaxed">
-                        [Placeholder: Descreva aqui como a barbearia pode utilizar o Trimly para gerenciar sua equipe, controlar fluxos de agendamentos diários, gerenciar serviços personalizados e expandir a sua base de clientes. O sistema fornece uma experiência fluida tanto para clientes quanto para barbeiros.]
+                        Descreva aqui como a barbearia pode utilizar o Trimly para gerenciar sua equipe, controlar fluxos de agendamentos diários, gerenciar serviços personalizados e expandir a sua base de clientes. O sistema fornece uma experiência fluida tanto para clientes quanto para barbeiros.
                     </p>
                 </div>
 
                 <!-- Seção 2: Pré-requisitos -->
                 <div class="space-y-4">
                     <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <span class="text-red-700">📋</span> O que é necessário para se cadastrar?
+                        O que é necessário para cadastrar seu negócio?
                     </h2>
                     <ul class="list-disc pl-6 text-sm text-gray-600 space-y-2">
-                        <li>[Placeholder: Ter uma barbearia física com equipe ativa]</li>
-                        <li>[Placeholder: Fornecer informações cadastrais válidas]</li>
-                        <li>[Placeholder: Definir lista de serviços iniciais e preços]</li>
-                        <li>[Placeholder: Aceitar as políticas e termos de uso do Trimly]</li>
+                        <li>Ter uma barbearia física com equipe ativa</li>
+                        <li>Fornecer informações cadastrais válidas</li>
+                        <li>Definir lista de serviços iniciais e preços</li>
+                        <li>Ler e Aceitar as políticas e termos de uso do Trimly</li>
                     </ul>
                 </div>
 
                 <!-- Seção 3: Contato com o Suporte (Cadastros de Admin) -->
                 <div class="bg-red-50/50 rounded-xl p-6 border border-red-100/75 space-y-3">
                     <h3 class="text-sm font-extrabold text-red-950 flex items-center gap-2">
-                        <span>🛡️</span> Cadastro de Administrador (Suporte Técnico)
+                        Cadastro de Administrador (Suporte Técnico)
                     </h3>
                     <p class="text-xs text-red-900 leading-relaxed">
                         A criação de novas contas de <strong>Administrador de Barbearia</strong> é feita exclusivamente de forma interna pelo nosso time de suporte. Isso garante a validação do seu negócio e a segurança dos dados cadastrados no sistema.
