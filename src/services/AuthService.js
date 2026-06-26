@@ -1,10 +1,19 @@
 import { UserFactory } from '../factories/UserFactory';
 
+/**
+ * Serviço responsável por autenticação, registro, gerenciamento de perfil e sessão de usuários.
+ */
 export class AuthService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Realiza o login de um usuário, validando credenciais e persistindo a sessão.
+     * @param {string} email - E-mail do usuário.
+     * @param {string} password - Senha do usuário.
+     * @returns {Promise<Object>} Dados do usuário logado.
+     */
     async login(email, password) {
         if (!email || !password) {
             throw new Error("E-mail e senha são obrigatórios!");
@@ -22,11 +31,19 @@ export class AuthService {
         return user;
     }
 
+    /**
+     * Encerra a sessão ativa do usuário limpando o LocalStorage.
+     * @returns {Promise<void>}
+     */
     async logout() {
         localStorage.removeItem('trimly_logado_user');
         localStorage.removeItem('trimly_logado');
     }
 
+    /**
+     * Obtém os dados do usuário atualmente logado.
+     * @returns {Object|null} Usuário logado ou null se não houver sessão ativa.
+     */
     getCurrentUser() {
         const userJson = localStorage.getItem('trimly_logado_user');
         if (userJson) {
@@ -39,6 +56,11 @@ export class AuthService {
         return null;
     }
 
+    /**
+     * Registra um novo usuário no sistema.
+     * @param {Object} dados - Contém nome, email, senha, telefone, cargo e barbeariaId.
+     * @returns {Promise<Object>} Usuário recém-criado.
+     */
     async register({ nome, email, senha, telefone, cargo, barbeariaId }) {
         if (cargo === 'Administrador' && !barbeariaId) {
             throw new Error("Por favor, selecione a barbearia que você gerenciará.");
@@ -61,6 +83,12 @@ export class AuthService {
         return await this.userRepository.createUser(novoUsuario);
     }
 
+    /**
+     * Atualiza os dados cadastrais e de senha do perfil do usuário ativo.
+     * @param {number} userId - ID do usuário.
+     * @param {Object} dados - Contém telefone, senhaAtual e novaSenha.
+     * @returns {Promise<Object>} Usuário atualizado.
+     */
     async updateProfile(userId, { telefone, senhaAtual, novaSenha }) {
         const users = await this.userRepository.getUsuarios();
         const user = users.find(u => Number(u.id) === Number(userId));
@@ -89,5 +117,21 @@ export class AuthService {
         localStorage.setItem('trimly_logado', updatedUser.nome);
 
         return updatedUser;
+    }
+
+    /**
+     * Exclui permanentemente a conta de um usuário.
+     * Se o usuário excluído for o que está logado atualmente, encerra a sessão ativa.
+     * @param {number} userId - ID do usuário a ser excluído.
+     * @returns {Promise<void>}
+     */
+    async deleteAccount(userId) {
+        const currentUser = this.getCurrentUser();
+        
+        await this.userRepository.deleteUser(userId);
+        
+        if (currentUser && Number(currentUser.id) === Number(userId)) {
+            await this.logout();
+        }
     }
 }

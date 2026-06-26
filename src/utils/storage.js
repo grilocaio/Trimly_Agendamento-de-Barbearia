@@ -45,7 +45,8 @@ const DEFAULTS = {
             data: '2026-06-15',
             horario: '09:00',
             status: 'Agendado',
-            descricao: 'Degradê disfarçado nas laterais'
+            descricao: 'Degradê disfarçado nas laterais',
+            motivoCancelamento: ''
         },
         {
             id: 102,
@@ -60,7 +61,8 @@ const DEFAULTS = {
             data: '2026-06-15',
             horario: '09:30',
             status: 'Agendado',
-            descricao: 'Fazer barba desenhada'
+            descricao: 'Fazer barba desenhada',
+            motivoCancelamento: ''
         },
         {
             id: 103,
@@ -75,7 +77,8 @@ const DEFAULTS = {
             data: '2026-06-15',
             horario: '09:00',
             status: 'Concluído',
-            descricao: 'Acerto de cabelo e barba'
+            descricao: 'Acerto de cabelo e barba',
+            motivoCancelamento: ''
         }
     ]
 };
@@ -129,8 +132,24 @@ export function getBarbearias() {
     return JSON.parse(localStorage.getItem('trimly_barbearias') || '[]');
 }
 
+/**
+ * Salva a lista de barbearias no LocalStorage.
+ * @param {Array} barbearias - Lista completa de barbearias.
+ */
+export function saveBarbearias(barbearias) {
+    localStorage.setItem('trimly_barbearias', JSON.stringify(barbearias));
+}
+
 export function getCortes() {
     return JSON.parse(localStorage.getItem('trimly_cortes') || '[]');
+}
+
+/**
+ * Salva a lista de cortes (serviços) no LocalStorage.
+ * @param {Array} cortes - Lista completa de cortes.
+ */
+export function saveCortes(cortes) {
+    localStorage.setItem('trimly_cortes', JSON.stringify(cortes));
 }
 
 export function getHorarios() {

@@ -23,15 +23,15 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Tipo de Conta</label>
                         <select v-model="cadCargo" class="block w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm bg-white">
                             <option value="Cliente">Cliente (Quero agendar cortes)</option>
-                            <option value="Administrador">Administrador (Gerenciar barbearia)</option>
+                            <option value="Barbeiro">Barbeiro (Trabalho em uma barbearia)</option>
                         </select>
                     </div>
 
-                    <!-- Dropdown de Barbearia apenas para Administrador -->
-                    <div v-if="cadCargo === 'Administrador'">
+                    <!-- Dropdown de Barbearia apenas para Barbeiro -->
+                    <div v-if="cadCargo === 'Barbeiro'">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Selecione sua Barbearia</label>
                         <select required v-model="cadBarbeariaId" class="block w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm bg-white">
-                            <option value="" disabled selected>Escolha a barbearia que você gerencia</option>
+                            <option value="" disabled selected>Escolha a barbearia onde você trabalha</option>
                             <option v-for="b in barbearias" :key="b.id" :value="b.id">{{ b.nome }} ({{ b.cidade.toUpperCase() }})</option>
                         </select>
                     </div>
@@ -88,7 +88,7 @@ const emit = defineEmits(['voltar', 'loginSucesso']);
 // Controle de qual tela mostrar
 const isCadastro = ref(false);
 
-// Listagem de Barbearias para a criação simplificada de Admin
+// Listagem de Barbearias para o cadastro de barbeiro
 const barbearias = ref([]);
 
 // Variáveis do Cadastro
@@ -120,7 +120,7 @@ async function fazerCadastro() {
             senha: cadSenha.value,
             telefone: cadTelefone.value,
             cargo: cadCargo.value,
-            barbeariaId: cadCargo.value === 'Administrador' ? Number(cadBarbeariaId.value) : null
+            barbeariaId: cadCargo.value === 'Barbeiro' ? Number(cadBarbeariaId.value) : null
         });
 
         alert("Cadastro realizado com sucesso! Faça seu login.");

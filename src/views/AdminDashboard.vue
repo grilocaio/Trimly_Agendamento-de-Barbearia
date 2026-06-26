@@ -52,6 +52,15 @@
                 >
                     ✂️ Serviços e Preços
                 </button>
+                <button 
+                    @click="abaAtiva = 'configuracoes'"
+                    :class="[
+                        'pb-4 px-2 text-sm font-bold border-b-2 cursor-pointer transition-colors',
+                        abaAtiva === 'configuracoes' ? 'border-red-800 text-red-800' : 'border-transparent text-gray-500 hover:text-gray-800'
+                    ]"
+                >
+                    ⚙️ Configurações
+                </button>
             </div>
 
             <!-- ABA 1: GERENCIAR AGENDAMENTOS -->
@@ -86,7 +95,7 @@
                         class="border rounded-xl p-6 hover:shadow-md transition-all bg-white"
                     >
                         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                            <div class="space-y-2">
+                            <div class="space-y-2 w-full">
                                 <div class="flex items-center gap-3 flex-wrap">
                                     <span class="font-extrabold text-gray-900">👤 Cliente: {{ ag.clienteNome }}</span>
                                     <span :class="[
@@ -107,6 +116,10 @@
                                 </div>
                                 <div v-if="ag.descricao" class="text-xs bg-gray-50 p-2.5 rounded border border-gray-100 mt-2 text-gray-500 italic">
                                     <span class="font-bold not-italic block text-gray-700">Nota do cliente:</span> "{{ ag.descricao }}"
+                                </div>
+                                <!-- Exibição do Motivo de Cancelamento se cancelado -->
+                                <div v-if="ag.status === 'Cancelado' && ag.motivoCancelamento" class="text-xs bg-red-50 text-red-800 p-2.5 rounded border border-red-100 mt-2">
+                                    <span class="font-bold block">Motivo do Cancelamento:</span> "{{ ag.motivoCancelamento }}"
                                 </div>
                             </div>
 
@@ -164,14 +177,24 @@
             </div>
 
             <!-- ABA 2: GERENCIAR BARBEIROS -->
-            <div v-if="abaAtiva === 'barbeiros'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div v-if="abaAtiva === 'barbeiros'" class="grid grid-cols-12 gap-8">
                 
-                <!-- Formulário de Cadastro de Barbeiros -->
-                <div class="lg:col-span-1 bg-white rounded-2xl shadow-xl p-8">
+                <!-- Formulário de Associação/Cadastro de Barbeiros -->
+                <div class="col-span-12 lg:col-span-4 bg-white rounded-2xl shadow-xl p-8">
                     <h2 class="text-xl font-bold text-gray-900 border-b pb-4 mb-6 flex items-center gap-2">
-                        ➕ Novo Barbeiro
+                        ➕ Adicionar Barbeiro
                     </h2>
-                    <form @submit.prevent="cadastrarBarbeiro" class="space-y-4">
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Método de Associação</label>
+                        <select v-model="modoCadastroBarbeiro" class="w-full px-3 py-2.5 border rounded-lg text-sm bg-white">
+                            <option value="novo">Cadastrar novo barbeiro</option>
+                            <option value="vincular">Vincular barbeiro já cadastrado</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Form 1: Cadastrar novo Barbeiro -->
+                    <form v-if="modoCadastroBarbeiro === 'novo'" @submit.prevent="cadastrarBarbeiro" class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Nome do Barbeiro</label>
                             <input required type="text" v-model="formBarbeiro.nome" placeholder="Ex: Lucas Barbeiro"
@@ -196,32 +219,61 @@
                             Cadastrar Barbeiro
                         </button>
                     </form>
+
+                    <!-- Form 2: Vincular Barbeiro existente sem barbearia -->
+                    <form v-else @submit.prevent="vincularBarbeiro" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Barbeiros Disponíveis no Site</label>
+                            <select required v-model="barbeiroSelecionadoId" class="w-full px-3 py-2.5 border rounded-lg text-sm bg-white">
+                                <option value="" disabled selected>Selecione um barbeiro...</option>
+                                <option v-for="b in barbeirosSemBarbearia" :key="b.id" :value="b.id">
+                                    {{ b.nome }} ({{ b.email }})
+                                </option>
+                            </select>
+                            <p v-if="barbeirosSemBarbearia.length === 0" class="text-xs text-amber-700 mt-2">
+                                Não há barbeiros cadastrados sem barbearia no momento.
+                            </p>
+                        </div>
+                        <button :disabled="barbeirosSemBarbearia.length === 0" type="submit" class="w-full py-3 bg-black hover:bg-red-800 transition-colors text-white font-bold rounded-lg text-xs cursor-pointer shadow disabled:bg-gray-300 disabled:cursor-not-allowed">
+                            Vincular Barbeiro
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Lista de Barbeiros da Barbearia -->
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl p-8">
+                <div class="col-span-12 lg:col-span-8 bg-white rounded-2xl shadow-xl p-8">
                     <h2 class="text-xl font-bold text-gray-900 border-b pb-4 mb-6">
                         Equipe Cadastrada ({{ listaBarbeiros.length }} barbeiros)
                     </h2>
                     
                     <div v-if="listaBarbeiros.length === 0" class="text-center py-12 text-gray-500 italic">
-                        Nenhum barbeiro cadastrado para esta barbearia. Use o formulário ao lado para cadastrar um.
+                        Nenhum barbeiro cadastrado para esta barbearia. Use o formulário ao lado para cadastrar ou vincular um.
                     </div>
                     
                     <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div 
                             v-for="b in listaBarbeiros" 
                             :key="b.id"
-                            class="border rounded-xl p-4 flex items-start gap-3 bg-gray-50 hover:bg-white hover:shadow-md transition-all"
+                            class="border rounded-xl p-4 flex items-start justify-between gap-3 bg-gray-50 hover:bg-white hover:shadow-md transition-all"
                         >
-                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-800 font-bold shrink-0">
-                                ✂️
+                            <div class="flex items-start gap-3 overflow-hidden">
+                                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-800 font-bold shrink-0">
+                                    ✂️
+                                </div>
+                                <div class="overflow-hidden">
+                                    <p class="font-bold text-gray-900 truncate">{{ b.nome }}</p>
+                                    <p class="text-xs text-gray-500 truncate">✉️ {{ b.email }}</p>
+                                    <p class="text-xs text-gray-500">📞 {{ b.telefone || 'Sem telefone' }}</p>
+                                </div>
                             </div>
-                            <div class="overflow-hidden">
-                                <p class="font-bold text-gray-900 truncate">{{ b.nome }}</p>
-                                <p class="text-xs text-gray-500 truncate">✉️ {{ b.email }}</p>
-                                <p class="text-xs text-gray-500">📞 {{ b.telefone || 'Sem telefone' }}</p>
-                            </div>
+                            <!-- Botão para Remover Barbeiro -->
+                            <button 
+                                @click="removerBarbeiro(b)" 
+                                class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors cursor-pointer shrink-0"
+                                title="Remover Barbeiro da Barbearia"
+                            >
+                                🗑️
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -229,10 +281,10 @@
             </div>
 
             <!-- ABA 3: GERENCIAR SERVIÇOS -->
-            <div v-if="abaAtiva === 'servicos'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div v-if="abaAtiva === 'servicos'" class="grid grid-cols-12 gap-8">
                 
                 <!-- Formulário de Cadastro de Serviços -->
-                <div class="lg:col-span-1 bg-white rounded-2xl shadow-xl p-8">
+                <div class="col-span-12 lg:col-span-4 bg-white rounded-2xl shadow-xl p-8">
                     <h2 class="text-xl font-bold text-gray-900 border-b pb-4 mb-6 flex items-center gap-2">
                         ➕ Novo Serviço
                     </h2>
@@ -254,7 +306,7 @@
                 </div>
 
                 <!-- Lista de Serviços -->
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl p-8">
+                <div class="col-span-12 lg:col-span-8 bg-white rounded-2xl shadow-xl p-8">
                     <h2 class="text-xl font-bold text-gray-900 border-b pb-4 mb-6">
                         Serviços Disponíveis ({{ listaCortes.length }})
                     </h2>
@@ -267,27 +319,95 @@
                         <div 
                             v-for="c in listaCortes" 
                             :key="c.id"
-                            class="border rounded-xl p-4 flex items-start gap-3 bg-gray-50 hover:bg-white hover:shadow-md transition-all"
+                            class="border rounded-xl p-4 flex items-start justify-between gap-3 bg-gray-50 hover:bg-white hover:shadow-md transition-all"
                         >
-                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-800 font-bold shrink-0">
-                                ✂️
-                            </div>
-                            <div class="overflow-hidden w-full">
-                                <div class="flex items-center justify-between gap-2">
-                                    <p class="font-bold text-gray-900 truncate">{{ c.descCorte }}</p>
-                                    <span :class="[
-                                        'px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider shrink-0',
-                                        c.barbeariaId ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-800'
-                                    ]">
-                                        {{ c.barbeariaId ? 'Personalizado' : 'Padrão' }}
-                                    </span>
+                            <div class="flex items-start gap-3 overflow-hidden w-full">
+                                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-800 font-bold shrink-0">
+                                    ✂️
                                 </div>
-                                <p class="text-sm font-bold text-gray-700 mt-2">R$ {{ Number(c.valor).toFixed(2) }}</p>
+                                <div class="overflow-hidden w-full">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <p class="font-bold text-gray-900 truncate">{{ c.descCorte }}</p>
+                                        <span :class="[
+                                            'px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider shrink-0',
+                                            c.barbeariaId ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-800'
+                                        ]">
+                                            {{ c.barbeariaId ? 'Personalizado' : 'Padrão' }}
+                                        </span>
+                                    </div>
+                                    <p class="text-sm font-bold text-gray-700 mt-2">R$ {{ Number(c.valor).toFixed(2) }}</p>
+                                </div>
                             </div>
+                            <!-- Botão para Excluir Serviço -->
+                            <button 
+                                @click="excluirCorte(c)" 
+                                class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors cursor-pointer shrink-0"
+                                title="Excluir Tipo de Serviço"
+                            >
+                                🗑️
+                            </button>
                         </div>
                     </div>
                 </div>
 
+            </div>
+
+            <!-- ABA 4: CONFIGURAÇÕES -->
+            <div v-if="abaAtiva === 'configuracoes'" class="space-y-8">
+                <!-- Rebranding da Barbearia -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
+                    <h2 class="text-xl font-bold text-gray-900 border-b pb-4 mb-6">
+                        ⚙️ Rebranding (Editar Dados da Barbearia)
+                    </h2>
+                    
+                    <form @submit.prevent="salvarDadosBarbearia" class="max-w-xl space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Nome da Barbearia</label>
+                                <input required type="text" v-model="formConfigBarbearia.nome" placeholder="Ex: Mr Cutts Premium"
+                                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:ring-1 focus:ring-red-500 focus:outline-none bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Cidade</label>
+                                <select required v-model="formConfigBarbearia.cidade" class="w-full px-3 py-2.5 border rounded-lg text-sm bg-white">
+                                    <option value="jacarei">Jacareí</option>
+                                    <option value="sjc">São José dos Campos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Categoria (Estilos)</label>
+                            <input required type="text" v-model="formConfigBarbearia.categoria" placeholder="Ex: Clássico, Moderno, Visagismo"
+                                class="w-full px-3 py-2.5 border rounded-lg text-sm focus:ring-1 focus:ring-red-500 focus:outline-none bg-white">
+                        </div>
+                        <button type="submit" class="py-2.5 px-6 bg-black hover:bg-red-800 transition-colors text-white font-bold rounded-lg text-xs cursor-pointer shadow">
+                            Salvar Alterações
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Danger Zone: Encerrar Barbearia -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-red-200">
+                    <h2 class="text-xl font-bold text-red-800 border-b pb-4 mb-6">
+                        ⚠️ Zona de Perigo (Encerrar Barbearia)
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-6">
+                        O encerramento da barbearia é uma ação <strong>definitiva e irreversível</strong>. Isso executará as seguintes operações:
+                    </p>
+                    <ul class="list-disc pl-6 text-xs text-gray-600 space-y-2 mb-6">
+                        <li>Cancela todos os agendamentos futuros da barbearia com motivo "Barbearia encerrada".</li>
+                        <li>Desvincula todos os barbeiros afiliados (eles continuam cadastrados no site, mas sem barbearia).</li>
+                        <li>Exclui o registro da barbearia do sistema.</li>
+                        <li><strong>Exclui permanentemente a sua conta de administrador.</strong></li>
+                    </ul>
+                    
+                    <button 
+                        @click="encerrarBarbearia" 
+                        class="py-3 px-6 bg-red-700 hover:bg-red-800 text-white font-bold rounded-lg text-xs cursor-pointer shadow transition-colors"
+                    >
+                        Encerrar Barbearia permanentemente
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -314,7 +434,11 @@ const todosAgendamentos = ref([]);
 const filtroBarbeiro = ref('');
 const filtroStatus = ref('');
 
-// Formulário do Barbeiro
+// Configurações do Barbeiro
+const modoCadastroBarbeiro = ref('novo');
+const barbeirosSemBarbearia = ref([]);
+const barbeiroSelecionadoId = ref('');
+
 const formBarbeiro = reactive({
     nome: '',
     email: '',
@@ -336,6 +460,14 @@ const formCorte = reactive({
     valor: ''
 });
 const listaCortes = ref([]);
+
+// Formulário de Configuração da Barbearia
+const formConfigBarbearia = reactive({
+    id: null,
+    nome: '',
+    cidade: '',
+    categoria: ''
+});
 
 // Computados
 const dataMinima = computed(() => {
@@ -364,7 +496,15 @@ onMounted(async () => {
         // Pegar nome da barbearia
         const barbearias = await bookingService.getBarbearias();
         const b = barbearias.find(x => x.id === Number(props.usuarioLogado.barbeariaId));
-        barbeariaNome.value = b ? b.nome : 'Minha Barbearia';
+        if (b) {
+            barbeariaNome.value = b.nome;
+            formConfigBarbearia.id = b.id;
+            formConfigBarbearia.nome = b.nome;
+            formConfigBarbearia.cidade = b.cidade;
+            formConfigBarbearia.categoria = b.categoria;
+        } else {
+            barbeariaNome.value = 'Minha Barbearia';
+        }
 
         await carregarDados();
     } catch (e) {
@@ -372,12 +512,20 @@ onMounted(async () => {
     }
 });
 
+/**
+ * Carrega e atualiza todos os dados necessários no painel do administrador.
+ */
 async function carregarDados() {
     try {
         // Carregar barbeiros da barbearia
         const usuarios = await authService.userRepository.getUsuarios();
         listaBarbeiros.value = usuarios.filter(
             u => u.cargo === 'Barbeiro' && Number(u.barbeariaId) === Number(props.usuarioLogado.barbeariaId)
+        );
+
+        // Carregar barbeiros sem barbearia para o fluxo de vinculação
+        barbeirosSemBarbearia.value = usuarios.filter(
+            u => u.cargo === 'Barbeiro' && (u.barbeariaId === null || u.barbeariaId === undefined)
         );
 
         // Carregar agendamentos
@@ -423,15 +571,65 @@ async function cadastrarBarbeiro() {
     }
 }
 
-// Ação 2: Cancelar agendamento pela barbearia
+// Ação: Vincular barbeiro existente que não possui barbearia
+async function vincularBarbeiro() {
+    if (!barbeiroSelecionadoId.value) {
+        alert("Por favor, selecione um barbeiro para vincular.");
+        return;
+    }
+    
+    try {
+        const userId = Number(barbeiroSelecionadoId.value);
+        const usuarios = await authService.userRepository.getUsuarios();
+        const barbeiroObj = usuarios.find(u => Number(u.id) === userId);
+        
+        if (!barbeiroObj) {
+            throw new Error("Barbeiro não encontrado.");
+        }
+        
+        // Vincular barbeiro à barbearia do admin
+        barbeiroObj.barbeariaId = Number(props.usuarioLogado.barbeariaId);
+        await authService.userRepository.updateUser(barbeiroObj);
+        
+        alert(`Barbeiro "${barbeiroObj.nome}" vinculado com sucesso!`);
+        barbeiroSelecionadoId.value = '';
+        await carregarDados();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Ação: Remover/Desvincular Barbeiro
+async function removerBarbeiro(barbeiro) {
+    if (!confirm(`Tem certeza de que deseja remover o barbeiro "${barbeiro.nome}" desta barbearia?\n\nA conta dele NÃO será excluída do sistema, mas ele ficará sem afiliação e todos os seus agendamentos ativos nesta barbearia serão cancelados.`)) {
+        return;
+    }
+    
+    try {
+        await bookingService.desvincularBarbeiro(barbeiro.id);
+        alert(`Barbeiro "${barbeiro.nome}" removido da barbearia e agendamentos cancelados.`);
+        await carregarDados();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Ação 2: Cancelar agendamento pela barbearia solicitando motivo
 async function cancelarAgendamento(id) {
-    if (!confirm("Tem certeza que deseja cancelar este agendamento?")) {
+    const motivo = prompt("Por favor, digite o motivo do cancelamento deste agendamento:");
+    
+    if (motivo === null) {
+        return; // Pressionou cancelar no prompt
+    }
+    
+    if (!motivo.trim()) {
+        alert("Erro: O motivo do cancelamento é obrigatório!");
         return;
     }
 
     try {
-        await bookingService.cancelarAgendamento(id);
-        alert("Agendamento cancelado!");
+        await bookingService.cancelarAgendamento(id, motivo.trim());
+        alert("Agendamento cancelado com sucesso!");
         await carregarDados();
     } catch (error) {
         alert(error.message);
@@ -494,6 +692,80 @@ async function cadastrarServico() {
         formCorte.valor = '';
 
         await carregarDados();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Ação: Excluir corte/serviço com validação de agendamentos futuros
+async function excluirCorte(corte) {
+    try {
+        // Verificar se há agendamentos futuros marcados para este corte
+        const ativos = await bookingService.verificarAgendamentosAtivos(corte.id);
+        
+        if (ativos.length > 0) {
+            const confirmou = confirm(
+                `ATENÇÃO: O serviço "${corte.descCorte}" possui ${ativos.length} agendamento(s) ativo(s) pendente(s).\n` +
+                `Se você excluir, o serviço sumirá da listagem de novos agendamentos, mas os agendamentos já marcados continuarão válidos.\n\n` +
+                `Deseja realmente prosseguir com a exclusão definitiva deste serviço?`
+            );
+            if (!confirmou) return;
+        } else {
+            if (!confirm(`Deseja realmente excluir permanentemente o serviço "${corte.descCorte}"?`)) {
+                return;
+            }
+        }
+
+        await bookingService.excluirCorte(corte.id);
+        alert(`Serviço "${corte.descCorte}" removido com sucesso.`);
+        await carregarDados();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Ação: Salvar edições cadastrais da barbearia (rebranding)
+async function salvarDadosBarbearia() {
+    try {
+        const updated = await bookingService.editarBarbearia({
+            id: formConfigBarbearia.id,
+            nome: formConfigBarbearia.nome,
+            cidade: formConfigBarbearia.cidade,
+            categoria: formConfigBarbearia.categoria
+        });
+        
+        barbeariaNome.value = updated.nome;
+        alert("Dados da barbearia alterados com sucesso!");
+        await carregarDados();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Ação: Encerrar barbearia de forma definitiva (Danger zone)
+async function encerrarBarbearia() {
+    const confirmar1 = confirm(
+        "ALERTA CRÍTICO: Tem certeza absoluta de que deseja fechar esta barbearia?\n\n" +
+        "Esta ação é DEFINITIVA. Ela cancelará todos os agendamentos, desvinculará a equipe " +
+        "e EXCLUIRÁ permanentemente a sua conta de administrador!"
+    );
+    if (!confirmar1) return;
+
+    const confirmar2 = confirm(
+        "CONFIRMAÇÃO FINAL: Deseja mesmo deletar esta barbearia e sua própria conta do sistema?"
+    );
+    if (!confirmar2) return;
+
+    try {
+        await bookingService.fecharBarbearia(
+            Number(props.usuarioLogado.barbeariaId),
+            Number(props.usuarioLogado.id)
+        );
+        
+        alert("Barbearia encerrada com sucesso. Sua conta foi excluída.");
+        // Limpar sessão e voltar para home
+        await authService.logout();
+        emit('voltar');
     } catch (error) {
         alert(error.message);
     }

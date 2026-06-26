@@ -35,7 +35,7 @@
                         :key="ag.id" 
                         class="border rounded-xl p-6 bg-white hover:shadow-md transition-all flex flex-col md:flex-row md:items-center md:justify-between gap-6"
                     >
-                        <div class="space-y-3">
+                        <div class="space-y-3 w-full">
                             <div class="flex items-center gap-3 flex-wrap">
                                 <span class="font-extrabold text-gray-900 text-lg">🏪 {{ ag.barbeariaNome || 'Barbearia' }}</span>
                                 <span :class="[
@@ -48,17 +48,22 @@
                                 </span>
                             </div>
                             
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600">
-                                <div><span class="font-bold text-gray-700">Barbeiro:</span> {{ ag.barbeiroNome }}</div>
-                                <div><span class="font-bold text-gray-700">Serviço:</span> {{ ag.corteNome }}</div>
-                                <div><span class="font-bold text-gray-700">Data:</span> {{ formatarData(ag.data) }}</div>
-                                <div><span class="font-bold text-gray-700">Horário:</span> {{ ag.horario }}</div>
-                                <div><span class="font-bold text-gray-700">Valor:</span> R$ {{ Number(ag.valor).toFixed(2) }}</div>
+                            <div class="grid grid-cols-12 gap-x-8 gap-y-1 text-sm text-gray-600">
+                                <div class="col-span-12 sm:col-span-6"><span class="font-bold text-gray-700">Barbeiro:</span> {{ ag.barbeiroNome }}</div>
+                                <div class="col-span-12 sm:col-span-6"><span class="font-bold text-gray-700">Serviço:</span> {{ ag.corteNome }}</div>
+                                <div class="col-span-12 sm:col-span-6"><span class="font-bold text-gray-700">Data:</span> {{ formatarData(ag.data) }}</div>
+                                <div class="col-span-12 sm:col-span-6"><span class="font-bold text-gray-700">Horário:</span> {{ ag.horario }}</div>
+                                <div class="col-span-12 sm:col-span-6"><span class="font-bold text-gray-700">Valor:</span> R$ {{ Number(ag.valor).toFixed(2) }}</div>
                             </div>
 
-                            <div v-if="ag.descricao" class="text-xs bg-gray-50 border border-gray-100 rounded p-3 text-gray-600 mt-2 italic">
+                            <div v-if="ag.descricao" class="text-xs bg-gray-50 bg-gray-50 border border-gray-100 rounded p-3 text-gray-600 mt-2 italic">
                                 <span class="font-bold not-italic block text-gray-700 mb-1">Minhas Observações:</span>
                                 "{{ ag.descricao }}"
+                            </div>
+
+                            <!-- Exibição do Motivo de Cancelamento se cancelado -->
+                            <div v-if="ag.status === 'Cancelado' && ag.motivoCancelamento" class="text-xs bg-red-50 text-red-800 p-3 rounded border border-red-100 mt-2">
+                                <span class="font-bold block">Motivo do Cancelamento:</span> "{{ ag.motivoCancelamento }}"
                             </div>
                         </div>
 
@@ -67,7 +72,7 @@
                             <button 
                                 v-if="ag.status === 'Agendado'"
                                 @click="cancelarAgendamento(ag.id)"
-                                class="px-5 py-2.5 bg-white text-red-700 border border-red-200 rounded-lg text-sm font-bold hover:bg-red-50 hover:border-red-300 transition-colors cursor-pointer"
+                                class="px-5 py-2.5 bg-white text-red-700 border border-red-200 rounded-lg text-sm font-bold hover:bg-red-50 hover:border-red-300 transition-colors cursor-pointer animate-pulse-subtle"
                             >
                                 Cancelar Agendamento
                             </button>
@@ -99,10 +104,12 @@ onMounted(async () => {
     await carregarAgendamentos();
 });
 
+/**
+ * Carrega e filtra os agendamentos do cliente logado de forma cronologicamente decrescente.
+ */
 async function carregarAgendamentos() {
     try {
         const todos = await bookingService.getAgendamentos();
-        // Filtra agendamentos do cliente logado e ordena por data e hora decrescente (mais recentes primeiro)
         meusAgendamentos.value = todos
             .filter(a => Number(a.clienteId) === Number(props.usuarioLogado.id))
             .sort((a, b) => {
@@ -122,13 +129,24 @@ function formatarData(dataStr) {
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
+/**
+ * Cancela um agendamento do cliente, solicitando e registrando obrigatoriamente um motivo.
+ * @param {number} id - ID do agendamento.
+ */
 async function cancelarAgendamento(id) {
-    if (!confirm("Tem certeza que deseja cancelar este agendamento? Esta ação não pode ser desfeita.")) {
+    const motivo = prompt("Por favor, digite o motivo do cancelamento do seu agendamento:");
+    
+    if (motivo === null) {
+        return; // Pressionou cancelar no prompt
+    }
+    
+    if (!motivo.trim()) {
+        alert("Erro: O motivo do cancelamento é obrigatório!");
         return;
     }
 
     try {
-        await bookingService.cancelarAgendamento(id);
+        await bookingService.cancelarAgendamento(id, motivo.trim());
         alert("Agendamento cancelado com sucesso!");
         await carregarAgendamentos();
     } catch (e) {

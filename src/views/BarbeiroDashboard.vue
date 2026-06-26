@@ -7,6 +7,19 @@
                 ← Voltar para o Início
             </button>
 
+            <!-- Mensagem caso o barbeiro esteja sem barbearia associada (desvinculado) -->
+            <div v-if="!usuarioLogado.barbeariaId" class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-xl mb-8 shadow-md">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">⚠️</span>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-amber-950">Vínculo Pendente</h3>
+                        <p class="text-xs text-amber-900 mt-1">
+                            Atualmente você não é afiliado a nenhuma barbearia. Peça a um administrador para que o cadastre ou vincule a sua conta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Cabeçalho do Painel -->
             <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
@@ -15,11 +28,30 @@
                     </span>
                     <h1 class="text-3xl font-extrabold text-gray-900 mt-3">Agenda de: {{ usuarioLogado.nome }}</h1>
                     <p class="text-gray-500 text-sm mt-1">Monitore seus horários marcados, mude status de atendimentos e reagende se necessário.</p>
+                    
+                    <!-- Atalho para agendar corte como cliente (barbeiros também cortam cabelo) -->
+                    <button 
+                        @click="$emit('irParaBarbearias')" 
+                        class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-black hover:bg-gray-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer shadow"
+                    >
+                        📅 Agendar Corte (Como Cliente)
+                    </button>
                 </div>
                 <div class="text-right bg-gray-50 border p-4 rounded-xl shrink-0">
                     <p class="text-xs text-gray-400 font-bold uppercase">Barbearia</p>
-                    <p class="text-sm font-bold text-gray-800">{{ barbeariaNome }}</p>
+                    <p class="text-sm font-bold text-gray-800">
+                        {{ usuarioLogado.barbeariaId ? barbeariaNome : 'Nenhuma (Desvinculado)' }}
+                    </p>
                     <p class="text-xs text-gray-500">{{ usuarioLogado.email }}</p>
+                    
+                    <!-- Botão para se desvincular da barbearia ativa -->
+                    <button 
+                        v-if="usuarioLogado.barbeariaId"
+                        @click="desvincularDaBarbearia"
+                        class="mt-3 block w-full text-center px-3 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded text-[10px] font-bold transition-colors cursor-pointer"
+                    >
+                        Sair da Barbearia
+                    </button>
                 </div>
             </div>
 
@@ -64,15 +96,19 @@
                                         {{ ag.status }}
                                     </span>
                                 </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-1 text-sm text-gray-600">
-                                    <div><span class="font-bold text-gray-700">Corte:</span> {{ ag.corteNome }}</div>
-                                    <div><span class="font-bold text-gray-700">Data:</span> {{ formatarData(ag.data) }}</div>
-                                    <div><span class="font-bold text-gray-700">Horário:</span> {{ ag.horario }}</div>
-                                    <div><span class="font-bold text-gray-700">Valor:</span> R$ {{ Number(ag.valor).toFixed(2) }}</div>
+                                <div class="grid grid-cols-12 gap-x-8 gap-y-1 text-sm text-gray-600">
+                                    <div class="col-span-12 sm:col-span-6 md:col-span-4"><span class="font-bold text-gray-700">Corte:</span> {{ ag.corteNome }}</div>
+                                    <div class="col-span-12 sm:col-span-6 md:col-span-4"><span class="font-bold text-gray-700">Data:</span> {{ formatarData(ag.data) }}</div>
+                                    <div class="col-span-12 sm:col-span-6 md:col-span-4"><span class="font-bold text-gray-700">Horário:</span> {{ ag.horario }}</div>
+                                    <div class="col-span-12 sm:col-span-6 md:col-span-4"><span class="font-bold text-gray-700">Valor:</span> R$ {{ Number(ag.valor).toFixed(2) }}</div>
                                 </div>
                                 <div v-if="ag.descricao" class="text-xs bg-gray-50 p-3 rounded border border-gray-100 mt-2 text-gray-600 italic">
                                     <span class="font-bold not-italic block text-gray-700 mb-1">📝 Detalhes/Instruções:</span>
                                     "{{ ag.descricao }}"
+                                </div>
+                                <!-- Exibição do Motivo de Cancelamento se cancelado -->
+                                <div v-if="ag.status === 'Cancelado' && ag.motivoCancelamento" class="text-xs bg-red-50 text-red-800 p-3 rounded border border-red-100 mt-2">
+                                    <span class="font-bold block">Motivo do Cancelamento:</span> "{{ ag.motivoCancelamento }}"
                                 </div>
                             </div>
 
@@ -149,7 +185,7 @@ const props = defineProps({
     usuarioLogado: Object
 });
 
-const emit = defineEmits(['voltar']);
+const emit = defineEmits(['voltar', 'irParaBarbearias', 'atualizarSessao']);
 
 // Estados gerais
 const barbeariaNome = ref('');
@@ -189,9 +225,13 @@ const agendamentosFiltrados = computed(() => {
 onMounted(async () => {
     try {
         // Carrega o nome da barbearia associada
-        const barbearias = await bookingService.getBarbearias();
-        const b = barbearias.find(x => x.id === Number(props.usuarioLogado.barbeariaId));
-        barbeariaNome.value = b ? b.nome : 'Nossa Barbearia';
+        if (props.usuarioLogado.barbeariaId) {
+            const barbearias = await bookingService.getBarbearias();
+            const b = barbearias.find(x => x.id === Number(props.usuarioLogado.barbeariaId));
+            barbeariaNome.value = b ? b.nome : 'Nossa Barbearia';
+        } else {
+            barbeariaNome.value = 'Nenhuma (Desvinculado)';
+        }
 
         listagemHorariosFixos.value = await bookingService.getHorarios();
 
@@ -201,6 +241,9 @@ onMounted(async () => {
     }
 });
 
+/**
+ * Carrega a lista de agendamentos no painel.
+ */
 async function carregarAgenda() {
     try {
         todosAgendamentos.value = await bookingService.getAgendamentos();
@@ -227,18 +270,52 @@ async function concluirAtendimento(id) {
     }
 }
 
-// Ação 2: Cancelar atendimento
+// Ação 2: Cancelar atendimento com motivo obrigatório
 async function cancelarAtendimento(id) {
-    if (!confirm("Tem certeza que deseja cancelar este agendamento?")) {
+    const motivo = prompt("Por favor, digite o motivo do cancelamento deste agendamento:");
+    
+    if (motivo === null) {
+        return; // Pressionou cancelar no prompt
+    }
+    
+    if (!motivo.trim()) {
+        alert("Erro: O motivo do cancelamento é obrigatório!");
         return;
     }
 
     try {
-        await bookingService.cancelarAgendamento(id);
+        await bookingService.cancelarAgendamento(id, motivo.trim());
         alert("Agendamento cancelado!");
         await carregarAgenda();
     } catch (e) {
         alert(e.message);
+    }
+}
+
+// Ação: Se desvincular da barbearia
+async function desvincularDaBarbearia() {
+    if (!confirm("Deseja realmente se desvincular de sua barbearia atual?\nVocê deixará de aparecer na lista de barbeiros dela, mas seus agendamentos já marcados continuarão ativos.")) {
+        return;
+    }
+
+    try {
+        await bookingService.desvincularBarbeiro(props.usuarioLogado.id);
+        
+        // Atualiza a sessão e emite para o home.vue atualizar
+        const userJson = localStorage.getItem('trimly_logado_user');
+        if (userJson) {
+            const parsed = JSON.parse(userJson);
+            parsed.barbeariaId = null;
+            localStorage.setItem('trimly_logado_user', JSON.stringify(parsed));
+        }
+
+        emit('atualizarSessao');
+        alert("Você se desvinculou da barbearia com sucesso.");
+        
+        // Atualiza estado local
+        barbeariaNome.value = 'Nenhuma (Desvinculado)';
+    } catch (error) {
+        alert(error.message);
     }
 }
 

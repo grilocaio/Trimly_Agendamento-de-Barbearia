@@ -59,10 +59,10 @@
 
                 <!-- Formulário de Agendamento do Cliente -->
                 <form v-else @submit.prevent="fazerAgendamento" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-12 gap-6">
                         
                         <!-- Seleção do Barbeiro -->
-                        <div>
+                        <div class="col-span-12 md:col-span-6">
                             <label class="block text-sm font-bold text-gray-700 mb-2">Selecione o Barbeiro</label>
                             <select required v-model="form.barbeiroId" @change="carregarHorariosDisponiveis" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 bg-white text-sm">
                                 <option value="" disabled selected>Escolha o profissional...</option>
@@ -74,7 +74,7 @@
                         </div>
 
                         <!-- Seleção do Serviço -->
-                        <div>
+                        <div class="col-span-12 md:col-span-6">
                             <label class="block text-sm font-bold text-gray-700 mb-2">Selecione o Serviço</label>
                             <select required v-model="form.corteId" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 bg-white text-sm">
                                 <option value="" disabled selected>Escolha o tipo de serviço...</option>
@@ -83,14 +83,14 @@
                         </div>
 
                         <!-- Seleção de Data -->
-                        <div>
+                        <div class="col-span-12 md:col-span-6">
                             <label class="block text-sm font-bold text-gray-700 mb-2">Escolha a Data</label>
                             <input required type="date" v-model="form.data" :min="dataMinima" @change="carregarHorariosDisponiveis"
                                 class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 bg-white text-sm">
                         </div>
 
                         <!-- Observações/Instruções Específicas (Requisito R4) -->
-                        <div>
+                        <div class="col-span-12 md:col-span-6">
                             <label class="block text-sm font-bold text-gray-700 mb-2">Instruções Específicas / Detalhes (Opcional)</label>
                             <textarea v-model="form.descricao" rows="2" placeholder="Ex: Cabelo curto nas laterais degradê na 1. Barba desenhada..."
                                 class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 bg-white text-sm"></textarea>
@@ -104,7 +104,7 @@
                             Horários Disponíveis para {{ barbeiroSelecionadoNome }} em {{ form.data }}
                         </label>
                         
-                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                        <div class="grid grid-cols-12 gap-3">
                             <button
                                 type="button"
                                 v-for="h in listaHorariosComStatus"
@@ -112,7 +112,7 @@
                                 :disabled="!h.disponivel"
                                 @click="form.horario = h.hora"
                                 :class="[
-                                    'py-3 px-2 text-center rounded-lg text-sm font-semibold transition-all border cursor-pointer',
+                                    'col-span-4 sm:col-span-3 md:col-span-2 py-3 px-2 text-center rounded-lg text-sm font-semibold transition-all border cursor-pointer',
                                     !h.disponivel 
                                         ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through' 
                                         : form.horario === h.hora

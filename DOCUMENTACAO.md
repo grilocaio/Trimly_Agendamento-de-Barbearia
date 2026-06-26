@@ -1,42 +1,53 @@
 # Documentação do Sistema de Agendamento - Trimly
 
-Esta documentação descreve as implementações de cadastro, login, agendamentos e dashboards adicionadas ao projeto Trimly, em conformidade com as especificações do banco de dados (`TrimlyBD.sql`) e os requisitos descritos nos documentos PDF do projeto.
+Esta documentação descreve as implementações de cadastro, login, agendamentos, dashboards, e arquitetura de código aplicadas ao projeto Trimly, em conformidade com as especificações do banco de dados (`TrimlyBD.sql`) e os requisitos de negócio e técnicos.
 
 ---
 
-## 🏗️ Resumo das Implementações
+## 🏗️ Arquitetura do Sistema & Padrões SOLID
 
-1. **Banco de Dados em Local Storage (`src/utils/storage.js`)**:
-   - Criação de uma camada de simulação de banco de dados persistida em `localStorage`.
-   - Mecanismo de **seeding** automático: caso o banco esteja vazio, ele é populado com dados padrão compatíveis com a estrutura SQL original.
-   - Implementação de restrições de integridade, como a **prevenção de conflitos de horário**: impede que o mesmo barbeiro possua dois agendamentos no mesmo horário e dia.
+O Trimly foi refatorado seguindo uma arquitetura robusta dividida em camadas claras para garantir separação de preocupações, extensibilidade e fácil manutenção (desacoplando o frontend do tipo de banco de dados).
 
-2. **Cadastro e Login Multifuncional (`src/views/Login.vue`)**:
-   - Cadastro unificado que permite criar contas de **Cliente** ou **Administrador**.
-   - Ao se cadastrar como Administrador, o usuário seleciona qual das 6 barbearias irá gerenciar.
-   - Autenticação e persistência de sessão de usuário em `localStorage` para todos os papéis (Cliente, Barbeiro e Administrador).
+1. **Camada de Repositórios (Abstração & Persistência)**:
+   - **`src/repositories/BaseRepository.js`**: Define interfaces abstratas (`IUserRepository`, `IBookingRepository`, `IBarbeariaRepository`, `ICorteRepository`, `IHorarioRepository`) com base no princípio de inversão de dependência.
+   - **`src/repositories/LocalStorageRepositories.js`**: Implementa de forma concreta todos os métodos das interfaces acima gravando e lendo dados no LocalStorage do navegador.
+   - **`src/utils/storage.js`**: Gerencia o LocalStorage de forma centralizada (seeds iniciais, salvamento de coleções).
 
-3. **Detalhes da Barbearia & Agendamentos (`src/views/BarbeariaDetalhes.vue`)**:
-   - Exibição de informações sobre a barbearia selecionada e listagem de barbeiros disponíveis nela.
-   - Formulário de agendamento reativo para clientes.
-   - **Validação de Slots de Horários**: Quando uma data e um barbeiro são selecionados, a interface exibe apenas horários livres. Horários já agendados para aquele barbeiro na data selecionada são bloqueados e desabilitados automaticamente.
-   - Suporte para inclusão de instruções e observações adicionais sobre o corte (Requisito R4).
+2. **Camada de Serviços (Regras de Negócio)**:
+   - **`src/services/BookingService.js`**: Centraliza as validações de agendamento (anti-conflitos), cancelamentos, desvinculação, edição de dados e controle de encerramento de filiais.
+   - **`src/services/AuthService.js`**: Controla sessões de usuário, login, logout, alterações de perfil e exclusões de contas.
 
-4. **Painel do Cliente (`src/views/ClienteAgendamentos.vue`)**:
-   - Histórico completo de agendamentos do cliente.
-   - Status do atendimento atualizado em tempo real (Agendado, Concluído, Cancelado).
-   - Opção para o cliente cancelar agendamentos ativos.
+3. **Padrões de Projeto Aplicados**:
+   - **Factory (Padrão de Criação)**: `src/factories/UserFactory.js` padroniza a criação de objetos de usuário (Cliente, Barbeiro, Administrador) com seus respectivos dados padrões.
+   - **Strategy (Padrão Comportamental)**: `src/strategies/RoleStrategy.js` define dinamicamente comportamentos, permissões e redirecionamento de dashboards com base no cargo do usuário autenticado no sistema.
 
-5. **Painel do Administrador (`src/views/AdminDashboard.vue`)**:
-   - Dashboard exclusivo para o administrador gerenciar sua barbearia específica.
-   - **Cadastro de Barbeiros**: Formulário para cadastrar novos barbeiros, associando-os automaticamente à sua barbearia.
-   - **Visualização de Agenda**: Lista completa de agendamentos de todos os barbeiros daquela filial.
-   - **Controle Total**: Ações para cancelar e reagendar compromissos (com verificação de conflitos).
+---
 
-6. **Painel do Barbeiro (`src/views/BarbeiroDashboard.vue`)**:
-   - Dashboard exclusivo para o barbeiro visualizar sua própria agenda de cortes.
-   - Exibição das notas e observações enviadas pelos clientes.
-   - Ações rápidas para marcar corte como "Concluído", cancelar agendamento ou reagendar horário.
+## 🚀 Funcionalidades da Fase 2 (Novas Regras de Negócio)
+
+### 1. Exclusões com Integridade e Segurança
+- **Excluir Barbeiro**: Um administrador pode excluir a conta de um barbeiro da equipe. O sistema cancela automaticamente todos os agendamentos ativos/futuros dele sob o motivo fixo *"Barbeiro não mais afiliado com a barbearia"* e remove seu cadastro do sistema.
+- **Excluir Cortes/Serviços**: Permite excluir serviços da barbearia (incluindo os padrões). O sistema consulta o repositório e, caso o serviço possua agendamentos ativos marcados, exibe um alerta informando a quantidade e solicita dupla confirmação de segurança ao administrador antes de proceder.
+- **Excluir Conta Própria**: Disponível para qualquer usuário na tela de perfil (`PerfilUsuario.vue`). Permite que o cliente, barbeiro ou administrador delete sua conta definitivamente mediante confirmação final. O sistema encerra a sessão ativa e o redireciona de imediato para a página inicial.
+- **Encerrar Barbearia (Admin)**: Opção crítica na aba de configurações. Cancela todos os agendamentos ativos da filial com o motivo *"Barbearia encerrada"*, desvincula os barbeiros da equipe (limpando seu campo `barbeariaId`), deleta o registro da barbearia e a conta do próprio administrador no final, efetuando o logout automático.
+
+### 2. Motivo de Cancelamento (`motivoCancelamento`)
+- O campo `motivoCancelamento` foi adicionado à modelagem de agendamentos.
+- Sempre que um agendamento é cancelado manualmente (seja pelo cliente, pelo administrador ou pelo barbeiro), o sistema exibe um `prompt()` obrigatório solicitando a razão.
+- Nos cards de histórico de agendamentos (em todos os painéis), quando o agendamento possui o status "Cancelado", o motivo é renderizado em destaque em uma caixa de fundo vermelho para total clareza do usuário.
+
+### 3. Vínculos de Barbeiros & Redirecionamentos
+- **Desvincular-se da Barbearia**: Barbeiros podem, do seu próprio painel, clicar em "Sair da Barbearia". Seu status passa para desvinculado (`barbeariaId: null`). O sistema mantém seus agendamentos antigos válidos (ele ainda pode atendê-los) e exibe em seu painel a instrução: *"Você não é afiliado a nenhuma barbearia. Peça a um administrador para cadastrá-lo."*
+- **Vincular Barbeiros**: Administradores possuem um dropdown na aba Equipe que exibe todos os barbeiros cadastrados no sistema que estão atualmente sem barbearia associada, permitindo vinculá-los com um clique (atualizando o `barbeariaId` deles).
+- **Barbeiros que Agendam Cortes**: Foi adicionado o botão "Agendar Corte (Como Cliente)" no painel do barbeiro. Ele emite um evento que altera o estado da navegação no `home.vue` e direciona o barbeiro para o fluxo de escolha de barbearia, permitindo que ele agende serviços com outros barbeiros normalmente.
+
+### 4. Rebranding & Ajustes no Cadastro
+- **Editar Barbearia (Rebranding)**: O administrador pode, na aba "Configurações", editar informações cadastrais básicas da sua barbearia (Nome, Cidade, Categoria).
+- **Cadastro Atualizado**: A opção de cadastro público como "Administrador" foi removida da tela de login por questões de segurança (agora é feita via suporte). Em seu lugar, foi incluída a opção "Barbeiro", que exige que ele selecione a barbearia inicial a qual deseja se afiliar no momento do registro.
+
+### 5. Nova Tela de Parceria & Limpeza
+- **"Junte-se a Nós" (`src/views/JuntoSeNos.vue`)**: Nova tela com design premium e contatos de suporte de placeholder para divulgar a plataforma a novos donos de estabelecimentos. É acessível clicando no rodapé do site.
+- **Limpeza de Arquivos**: Os arquivos de componente inativos `src/views/AboutUs.vue` e `src/components/Breadcrumb.vue` foram removidos em definitivo do projeto.
 
 ---
 
@@ -44,45 +55,47 @@ Esta documentação descreve as implementações de cadastro, login, agendamento
 
 As tabelas originais do `TrimlyBD.sql` foram modeladas em JSON sob as seguintes chaves do Local Storage:
 
-*   **`trimly_barbearias`**: Lista de barbearias ativas (id, nome, categoria, imagem).
-*   **`trimly_cortes`**: Lista de serviços disponíveis (id, descCorte, valor).
-*   **`trimly_horarios`**: Lista de horários fixos de funcionamento (de 08:00 a 17:30).
-*   **`trimly_usuarios`**: Armazena clientes, barbeiros e administradores. Contém o campo `cargo` ('Cliente', 'Barbeiro', 'Administrador') e `barbeariaId` (apenas para barbeiros e admins).
-*   **`trimly_agendamentos`**: Armazena os registros de agendamentos realizados, incluindo IDs e nomes dos clientes/barbeiros, data, hora, observações, preço e status ('Agendado', 'Concluído', 'Cancelado').
+*   **`trimly_barbearias`**: Lista de barbearias ativas (id, nome, cidade, categoria, imagem).
+*   **`trimly_cortes`**: Lista de serviços disponíveis (id, descCorte, valor, barbeariaId).
+*   **`trimly_horarios`**: Lista de horários de funcionamento (de 08:00 a 17:30).
+*   **`trimly_usuarios`**: Contas cadastradas. Possui `cargo` ('Cliente', 'Barbeiro', 'Administrador') e `barbeariaId` (para barbeiros e admins).
+*   **`trimly_agendamentos`**: Histórico de marcações. Contém IDs e nomes dos envolvidos, data, hora, observações, preço, status ('Agendado', 'Concluído', 'Cancelado') e `motivoCancelamento` (string).
 
 ---
 
 ## 🔑 Credenciais Pré-Seadas para Teste Rápido
 
-Para facilitar a verificação dos fluxos e dashboards, o sistema já é inicializado com as seguintes credenciais de teste (senha padrão para todos é `123`):
+A senha padrão para todas as contas abaixo é `123`:
 
-### 1. Administradores (Responsáveis por cadastrar novos barbeiros e gerenciar agendamentos de sua respectiva barbearia)
-*   **Barbearia Mr Cutts (ID 1)**: `admin1@trimly.com`
-*   **Barbearia MW Barber Studio (ID 2)**: `admin2@trimly.com`
-*   **Barbearia Visão Barbearia (ID 3)**: `admin3@trimly.com`
-*   **Barbearia Ocimar Hair Barbearia (ID 4)**: `admin4@trimly.com`
-*   **Barbearia Kleber Rosa Barbearia (ID 5)**: `admin5@trimly.com`
-*   **Barbearia Santta Madre Barbearia (ID 6)**: `admin6@trimly.com`
+### 1. Administradores (Gerenciam sua respectiva barbearia)
+- **Barbearia Mr Cutts**: `admin1@trimly.com`
+- **Barbearia MW Barber Studio**: `admin2@trimly.com`
+- **Barbearia Visão Barbearia**: `admin3@trimly.com`
 
-### 2. Barbeiros (Visualizam sua própria agenda e marcam serviços como concluídos)
-*   **Henrique Barbeiro (associado à Mr Cutts)**: `henrique@trimly.com`
-*   **Thales Barbeiro (associado à Mr Cutts)**: `thales@trimly.com`
+### 2. Barbeiros (Visualizam agenda e marcam conclusões/desvínculos)
+- **Henrique Barbeiro (Mr Cutts)**: `henrique@trimly.com`
+- **Thales Barbeiro (Mr Cutts)**: `thales@trimly.com`
 
-### 3. Clientes (Realizam agendamentos e cancelam os próprios horários)
-*   **Kawan Cliente**: `kawan@trimly.com`
-*   **Jean Cliente**: `jean@trimly.com`
+### 3. Clientes (Realizam agendamentos)
+- **Kawan Cliente**: `kawan@trimly.com`
+- **Jean Cliente**: `jean@trimly.com`
 
 ---
 
-## 🛠️ Arquivos Modificados/Criados
+## 🛠️ Arquivos Modificados/Criados na Refatoração SOLID & Fase 2
 
-*   **Novo** `src/utils/storage.js`: Camada de acesso e gerenciamento do Local Storage.
-*   **Novo** `src/views/BarbeariaDetalhes.vue`: Exibe detalhes e formulário de reserva de horários livres.
-*   **Novo** `src/views/ClienteAgendamentos.vue`: Histórico e cancelamento de agendamentos para clientes.
-*   **Novo** `src/views/AdminDashboard.vue`: Cadastro de barbeiros e controle de agendamentos de uma barbearia.
-*   **Novo** `src/views/BarbeiroDashboard.vue`: Agenda de cortes e finalização de atendimentos por barbeiro.
-*   **Modificado** `src/main.js`: Inicialização e seeding do Local Storage no carregamento da aplicação.
-*   **Modificado** `src/views/Login.vue`: Telas de login e cadastro com seleção de perfil/barbearia.
-*   **Modificado** `src/components/Header.vue`: Navegação dinâmica baseada no perfil autenticado.
-*   **Modificado** `src/views/home.vue`: Roteamento e gerenciamento de estados globais de telas.
-*   **Modificado** `src/views/Barbearias.vue`: Torna os cards clicáveis para abrir o agendamento da respectiva barbearia.
+- `src/repositories/BaseRepository.js` (Interfaces de dados)
+- `src/repositories/LocalStorageRepositories.js` (Implementação das interfaces para LocalStorage)
+- `src/services/BookingService.js` (Serviços e regras de negócio de agendamentos)
+- `src/services/AuthService.js` (Serviços e regras de autenticação/perfil/contas)
+- `src/factories/UserFactory.js` (Fábrica de usuários)
+- `src/strategies/RoleStrategy.js` (Estratégia de controle de cargos)
+- `src/utils/storage.js` (Banco de dados e seeds)
+- `src/views/Login.vue` (Cadastro de cliente/barbeiro, login)
+- `src/views/home.vue` (Roteador reativo principal)
+- `src/views/AdminDashboard.vue` (Painel com exclusões, rebranding, vinculação e encerramento)
+- `src/views/BarbeiroDashboard.vue` (Painel com agenda, agendamento como cliente e desvinculação)
+- `src/views/ClienteAgendamentos.vue` (Exibição de motivos e cancelamentos do cliente)
+- `src/views/PerfilUsuario.vue` (Editar perfil e exclusão de conta própria)
+- `src/views/JuntoSeNos.vue` (Nova tela de parceria)
+- `src/components/Footer.vue` (Atalho para a tela de parceria)

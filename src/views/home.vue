@@ -53,6 +53,8 @@
       v-if="telaAtual === 'barbeiro_dashboard' && usuarioLogado && usuarioLogado.cargo === 'Barbeiro'"
       :usuarioLogado="usuarioLogado"
       @voltar="telaAtual = 'home'"
+      @irParaBarbearias="telaAtual = 'Barbearias'"
+      @atualizarSessao="carregarUsuarioLogado"
   />
 
   <!-- Tela de Perfil do Usuário -->
@@ -61,6 +63,31 @@
       :usuarioLogado="usuarioLogado"
       @voltar="telaAtual = 'home'"
       @perfilAtualizado="usuarioObj => usuarioLogado = usuarioObj"
+      @contaExcluida="fazerLogout"
+  />
+
+  <!-- Tela de Parceria / Junte-se Nós -->
+  <JuntoSeNos
+      v-if="telaAtual === 'junte_se'"
+      @voltar="telaAtual = 'home'"
+  />
+
+  <!-- Tela Origem do Site -->
+  <OrigemDoSite
+      v-if="telaAtual === 'origem'"
+      @voltar="telaAtual = 'home'"
+  />
+
+  <!-- Tela Desenvolvedores -->
+  <Desenvolvedores
+      v-if="telaAtual === 'desenvolvedores'"
+      @voltar="telaAtual = 'home'"
+  />
+
+  <!-- Tela Termos de Serviço -->
+  <TermosDeServico
+      v-if="telaAtual === 'termos'"
+      @voltar="telaAtual = 'home'"
   />
 
   <!-- Tela de Login -->
@@ -69,7 +96,14 @@
       @voltar="telaAtual = 'home'" 
       @loginSucesso="entrarNoSistema"
   />
-  <Footer />
+  
+  <!-- Footer com eventos para Junte-se Nós e páginas institucionais -->
+  <Footer 
+      @junte_se="telaAtual = 'junte_se'" 
+      @origem="telaAtual = 'origem'"
+      @desenvolvedores="telaAtual = 'desenvolvedores'"
+      @termos="telaAtual = 'termos'"
+  />
 </template>
 
 <script setup>
@@ -82,21 +116,26 @@ import Barbearias from '@/views/Barbearias.vue';
 import Login from '@/views/Login.vue';
 import Cards from '@/layouts/Cards.vue';
 
-// Importação das novas telas
+// Importação das views principais
 import BarbeariaDetalhes from '@/views/BarbeariaDetalhes.vue';
 import ClienteAgendamentos from '@/views/ClienteAgendamentos.vue';
 import AdminDashboard from '@/views/AdminDashboard.vue';
 import BarbeiroDashboard from '@/views/BarbeiroDashboard.vue';
 import PerfilUsuario from '@/views/PerfilUsuario.vue';
+import JuntoSeNos from '@/views/JuntoSeNos.vue'; // Nova tela de parceria
+import OrigemDoSite from '@/views/OrigemDoSite.vue';
+import Desenvolvedores from '@/views/Desenvolvedores.vue';
+import TermosDeServico from '@/views/TermosDeServico.vue';
 
 import { authService, bookingService } from '@/services';
 import { RoleStrategyContext } from '@/strategies/RoleStrategy';
 
+// Controladores de estado/navegação (sem Vue Router)
 const telaAtual = ref('home');
 const estadoDaBusca = ref('');
 const cidadeDaBusca = ref('');
 
-// Usuário logado é um objeto completo: { id, nome, email, cargo, barbeariaId }
+// Usuário logado e barbearias selecionadas
 const usuarioLogado = ref(null);
 const barbeariaSelecionada = ref(null);
 const origemDetalhes = ref('Barbearias');
@@ -105,6 +144,9 @@ onMounted(() => {
     carregarUsuarioLogado();
 });
 
+/**
+ * Recarrega os dados do usuário atualmente autenticado a partir do serviço de sessão.
+ */
 function carregarUsuarioLogado() {
     usuarioLogado.value = authService.getCurrentUser();
 }
@@ -147,6 +189,9 @@ watch(telaAtual, (novaTela) => {
     }
 });
 
+/**
+ * Função utilitária para navegar entre as seções da página inicial e outras telas.
+ */
 function navegarPara(tela) {
     if (tela === 'Barbearias') {
         telaAtual.value = 'home';
@@ -182,4 +227,4 @@ async function fazerLogout() {
     usuarioLogado.value = null;
     telaAtual.value = 'home';
 }
-</script>
+</script>

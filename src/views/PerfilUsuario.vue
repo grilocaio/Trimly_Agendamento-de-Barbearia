@@ -70,6 +70,22 @@
                 </div>
 
             </form>
+
+            <!-- Zona de Perigo - Exclusão de Conta Própria -->
+            <div class="border-t border-red-200 mt-8 pt-6 space-y-4">
+                <h3 class="text-xs font-bold text-red-800 uppercase tracking-wider">⚠️ Zona de Perigo</h3>
+                <p class="text-xs text-gray-500">
+                    A exclusão da sua conta é <strong>permanente e irreversível</strong>. Todos os seus agendamentos ativos serão cancelados e seus dados de acesso deletados do sistema.
+                </p>
+                <button 
+                    type="button" 
+                    @click="excluirMinhaConta" 
+                    class="w-full py-2.5 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 text-red-700 font-bold rounded-lg text-xs cursor-pointer transition-colors"
+                >
+                    Excluir minha conta permanentemente
+                </button>
+            </div>
+            
         </div>
     </div>
 </template>
@@ -82,7 +98,7 @@ const props = defineProps({
     usuarioLogado: Object
 });
 
-const emit = defineEmits(['voltar', 'perfilAtualizado']);
+const emit = defineEmits(['voltar', 'perfilAtualizado', 'contaExcluida']);
 
 const form = reactive({
     telefone: '',
@@ -95,6 +111,9 @@ onMounted(() => {
     form.telefone = props.usuarioLogado.telefone || '';
 });
 
+/**
+ * Salva as alterações feitas no perfil do usuário ativo.
+ */
 async function salvarPerfil() {
     // Validar confirmação localmente
     if (form.novaSenha && form.novaSenha !== form.confirmarNovaSenha) {
@@ -111,6 +130,25 @@ async function salvarPerfil() {
         alert("Perfil atualizado com sucesso!");
         emit('perfilAtualizado', usuarioAtualizado);
         emit('voltar');
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+/**
+ * Exclui permanentemente a própria conta do usuário mediante dupla confirmação de segurança.
+ */
+async function excluirMinhaConta() {
+    const confirm1 = confirm("Tem certeza absoluta de que deseja excluir permanentemente a sua conta?\nTodos os seus dados pessoais e de acesso serão deletados do sistema Trimly!");
+    if (!confirm1) return;
+
+    const confirm2 = confirm("CONFIRMAÇÃO FINAL: Deseja realmente deletar sua conta? Esta ação é irreversível e você será deslogado imediatamente.");
+    if (!confirm2) return;
+
+    try {
+        await authService.deleteAccount(props.usuarioLogado.id);
+        alert("Sua conta foi excluída com sucesso.");
+        emit('contaExcluida');
     } catch (error) {
         alert(error.message);
     }

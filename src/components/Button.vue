@@ -22,7 +22,7 @@ const props = defineProps({
 </script>
 <template>
     <div class="flex items-center">
-        <button :class="props.color" class="bg-red-800 flex text-white items-center  py-3 px-6 gap-2">
+        <button :class="props.color" class="bg-red-800 flex text-white items-center  py-3 px-6 gap-2 cursor-pointer rounded">
             <p :class="props.textColor">{{ text }}</p>
             
             <slot />
