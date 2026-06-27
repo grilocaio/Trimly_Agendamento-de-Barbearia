@@ -687,7 +687,7 @@ async function cadastrarServico() {
 
         alert(`Serviço "${formCorte.descCorte}" cadastrado com sucesso!`);
         
-        // Limpar formulário
+        // Limpar formulário após o cadastro
         formCorte.descCorte = '';
         formCorte.valor = '';
 
@@ -700,10 +700,15 @@ async function cadastrarServico() {
 // Ação: Excluir corte/serviço com validação de agendamentos futuros
 async function excluirCorte(corte) {
     try {
-        // Verificar se há agendamentos futuros marcados para este corte
+        // [VALIDAÇÃO DE INTEGRIDADE]
+        // Antes de excluir fisicamente um serviço, fazemos uma varredura para identificar se
+        // existem clientes com agendamentos marcados que dependem deste tipo de corte.
         const ativos = await bookingService.verificarAgendamentosAtivos(corte.id);
         
         if (ativos.length > 0) {
+            // Se houver agendamentos ativos, mostramos um alerta diferenciado de confirmação.
+            // Isso previne que o administrador delete um serviço sem saber que causará impactos
+            // em compromissos previamente agendados.
             const confirmou = confirm(
                 `ATENÇÃO: O serviço "${corte.descCorte}" possui ${ativos.length} agendamento(s) ativo(s) pendente(s).\n` +
                 `Se você excluir, o serviço sumirá da listagem de novos agendamentos, mas os agendamentos já marcados continuarão válidos.\n\n` +
@@ -711,13 +716,16 @@ async function excluirCorte(corte) {
             );
             if (!confirmou) return;
         } else {
+            // Caminho de exclusão comum caso nenhum agendamento dependa deste corte.
             if (!confirm(`Deseja realmente excluir permanentemente o serviço "${corte.descCorte}"?`)) {
                 return;
             }
         }
 
+        // Executa a exclusão lógica/física no repositório correspondente
         await bookingService.excluirCorte(corte.id);
         alert(`Serviço "${corte.descCorte}" removido com sucesso.`);
+        // Recarrega os dados locais para re-renderizar a tabela de serviços atualizada
         await carregarDados();
     } catch (error) {
         alert(error.message);

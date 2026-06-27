@@ -27,7 +27,7 @@ const barbeariaRepository = USE_API ? new ApiBarbeariaRepository() : new LocalSt
 const corteRepository = USE_API ? new ApiCorteRepository() : new LocalStorageCorteRepository();
 const horarioRepository = USE_API ? new ApiHorarioRepository() : new LocalStorageHorarioRepository();
 
-export const authService = new AuthService(userRepository);
+export const authService = new AuthService(userRepository, bookingRepository);
 export const bookingService = new BookingService({
     bookingRepository,
     barbeariaRepository,

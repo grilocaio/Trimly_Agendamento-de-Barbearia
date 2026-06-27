@@ -101,16 +101,23 @@ export class BookingService {
      * @returns {Promise<Object>} Agendamento cadastrado.
      */
     async fazerAgendamento({ clienteId, clienteNome, barbeiroId, barbeiroNome, barbeariaId, barbeariaNome, corteId, corteNome, valor, data, horario, descricao }) {
-        // Validação anti-conflito preventiva
+        // [CHEQUE DE CONCORRÊNCIA]
+        // Chamamos a checagem de horários disponíveis imediatamente antes de realizar a gravação física.
+        // Isso evita que dois usuários com a mesma tela aberta consigam reservar o mesmo slot ao mesmo tempo.
         const slots = await this.getSlotsDisponiveis(barbeiroId, data);
         const slotDesejado = slots.find(s => s.hora === horario);
         
+        // Se o slot não existir na grade ou já estiver marcado como ocupado, lançamos uma exceção
+        // impedindo a gravação do registro duplicado.
         if (!slotDesejado || !slotDesejado.disponivel) {
             throw new Error("Desculpe, esse horário acabou de ser reservado por outra pessoa. Selecione outro horário.");
         }
 
+        // Caso o horário esteja livre, montamos a estrutura do registro.
+        // O ID é gerado temporariamente via timestamp Unix no LocalStorage, mas em uma API real
+        // com MySQL/Postgres isso é gerenciado por uma coluna do tipo AUTO_INCREMENT ou UUID.
         const novoAgendamento = {
-            id: Date.now(), // Para LocalStorage. O MySQL tratará via AUTO_INCREMENT
+            id: Date.now(), 
             clienteId: Number(clienteId),
             clienteNome,
             barbeiroId: Number(barbeiroId),
@@ -123,7 +130,7 @@ export class BookingService {
             data,
             horario,
             descricao: descricao || '',
-            status: 'Agendado',
+            status: 'Agendado', // Todo agendamento nasce com status pendente 'Agendado'
             motivoCancelamento: ''
         };
 
@@ -137,6 +144,8 @@ export class BookingService {
      * @returns {Promise<Object>} Agendamento atualizado.
      */
     async cancelarAgendamento(id, motivo = '') {
+        // O cancelamento é uma transição lógica de estado. Não excluímos o registro fisicamente
+        // para mantermos o histórico de auditoria e podermos exibir ao usuário o porquê de ter sido desmarcado.
         return await this.bookingRepository.updateStatusComMotivo(id, 'Cancelado', motivo);
     }
 

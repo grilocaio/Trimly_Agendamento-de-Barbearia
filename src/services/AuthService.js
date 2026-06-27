@@ -4,8 +4,9 @@ import { UserFactory } from '../factories/UserFactory';
  * Serviço responsável por autenticação, registro, gerenciamento de perfil e sessão de usuários.
  */
 export class AuthService {
-    constructor(userRepository) {
+    constructor(userRepository, bookingRepository = null) {
         this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     /**
@@ -127,6 +128,14 @@ export class AuthService {
      */
     async deleteAccount(userId) {
         const currentUser = this.getCurrentUser();
+        
+        // Se a conta a ser excluída for de um cliente, cancelamos preventivamente todos os seus agendamentos ativos
+        const users = await this.userRepository.getUsuarios();
+        const user = users.find(u => Number(u.id) === Number(userId));
+        if (user && user.cargo === 'Cliente' && this.bookingRepository) {
+            const motivo = "Cliente excluiu a própria conta";
+            await this.bookingRepository.cancelarAgendamentosPorCliente(userId, motivo);
+        }
         
         await this.userRepository.deleteUser(userId);
         

@@ -49,7 +49,7 @@
                         <h3 class="text-lg font-bold text-gray-900 text-center">Henrique Zaianz</h3>
                         <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Estudante de ADS</p>
                         <p class="text-gray-500 text-xs text-center mt-4 leading-relaxed">
-                            Focada em design premium e experiência do usuário. Responsável pela criação das telas responsivas, estilização elegante com Tailwind CSS e transições fluidas da aplicação.
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam ad expedita nulla libero voluptas quae dicta animi temporibus cum fuga, quibusdam eveniet consequatur error, mollitia tempore velit amet molestias assumenda.
                         </p>
                     </div>
                     <div class="bg-gray-50 p-4 border-t flex justify-center gap-4 text-xs text-gray-400">
@@ -68,7 +68,7 @@
                         <h3 class="text-lg font-bold text-gray-900 text-center">Kawan Mesquita</h3>
                         <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Estudante de ADS</p>
                         <p class="text-gray-500 text-xs text-center mt-4 leading-relaxed">
-                            Responsável por testes automatizados de segurança, deploy contínuo, integridade do LocalStorage e garantia de que a sincronização com APIs ocorra livre de falhas ou perdas de dados.
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam ad expedita nulla libero voluptas quae dicta animi temporibus cum fuga, quibusdam eveniet consequatur error, mollitia tempore velit amet molestias assumenda.
                         </p>
                     </div>
                     <div class="bg-gray-50 p-4 border-t flex justify-center gap-4 text-xs text-gray-400">

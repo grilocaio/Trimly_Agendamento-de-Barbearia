@@ -46,6 +46,13 @@ export class IBookingRepository {
      * @param {string} motivo - Motivo do cancelamento.
      */
     async cancelarAgendamentosPorBarbearia(barbeariaId, motivo) { throw new Error("Método não implementado"); }
+
+    /**
+     * Cancela todos os agendamentos ativos de um cliente com um motivo específico.
+     * @param {number} clienteId - ID do cliente.
+     * @param {string} motivo - Motivo do cancelamento.
+     */
+    async cancelarAgendamentosPorCliente(clienteId, motivo) { throw new Error("Método não implementado"); }
 }
 
 export class IBarbeariaRepository {

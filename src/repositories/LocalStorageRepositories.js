@@ -134,6 +134,21 @@ export class LocalStorageBookingRepository extends IBookingRepository {
             saveAgendamentos(bookings);
         }
     }
+
+    async cancelarAgendamentosPorCliente(clienteId, motivo) {
+        const bookings = getAgendamentos();
+        let alterado = false;
+        bookings.forEach(a => {
+            if (Number(a.clienteId) === Number(clienteId) && a.status === 'Agendado') {
+                a.status = 'Cancelado';
+                a.motivoCancelamento = motivo;
+                alterado = true;
+            }
+        });
+        if (alterado) {
+            saveAgendamentos(bookings);
+        }
+    }
 }
 
 export class LocalStorageBarbeariaRepository extends IBarbeariaRepository {
