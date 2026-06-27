@@ -15,7 +15,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 pt-8 pb-24 px-4 lg:px-16 gap-8">
             <div v-for="(item, index) in filteredImages" :key="item.id" class="relative group overflow-hidden shadow-lg">
-                <img :src="item.image" class="w-full h-[350px] object-cover transition duration-300">
+                <img :src="item.imagem" class="w-full h-[350px] object-cover transition duration-300">
 
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/60 active:bg-black/70 transition duration-300">
                 </div>
@@ -24,14 +24,14 @@
                     <div class="flex flex-col items-left justify-start gap-2">
                         <div class="flex justify-between items-end">
                             <h1 class="text-white text-3xl font-bold">
-                                {{ item.title }}
+                                {{ item.nome }}
                             </h1>
                             <p class="text-red-800 font-bold text-lg">
                                 ★ <span class="text-white">5.0</span>
                             </p>
                         </div>
                         <p class="text-gray-300 text-lg">
-                            {{ item.category }} • {{ item.cidade }}
+                            {{ item.categoria }} • {{ item.cidade === 'sjc' ? 'S. J. Campos' : 'Jacareí' }}
                         </p>
                     </div>
                     
@@ -50,20 +50,23 @@
 </template>
 
 <script setup>
-import { ref, computed, defineEmits } from 'vue'
+import { ref, computed, onMounted, defineEmits } from 'vue'
 import SectionTitles from '@/components/SectionTitles.vue'
+import { bookingService } from '@/services'
 
 const emit = defineEmits(['verBarbearia']);
 
-// Aqui nós colocamos TODAS as barbearias do sistema
-const todasAsBarbearias = [
-    { id: 1, image: '/barbearias/jacarei/mrcutts.jpeg', title: "Mr Cutts", cidade: "Jacareí", category: "Clássico" },
-    { id: 2, image: '/barbearias/jacarei/mw barber studio.jpeg', title: "MW Barber Studio", cidade: "Jacareí", category: "Moderno" },
-    { id: 3, image: '/barbearias/jacarei/visão barbearia.jpeg', title: "Visão Barbearia", cidade: "Jacareí", category: "Visagismo" },
-    { id: 4, image: '/barbearias/sjc/ocimar hair.jpeg', title: "Ocimar Hair Barbearia", cidade: "S. J. dos Campos", category: "Clássico" },
-    { id: 5, image: '/barbearias/sjc/Kleber Rosa.jpeg', title: "Kleber Rosa Barbearia", cidade: "S. J. dos Campos", category: "Moderno" },
-    { id: 6, image: '/barbearias/sjc/santta madre.jpeg', title: "Santta Madre Barbearia", cidade: "S. J. dos Campos", category: "Moderno" }
-]
+// Estado reativo para armazenar as barbearias obtidas do repositório
+const todasAsBarbearias = ref([])
+
+onMounted(async () => {
+    try {
+        // Carrega os dados reais e atualizados do banco local
+        todasAsBarbearias.value = await bookingService.getBarbearias()
+    } catch (e) {
+        console.error("Erro ao carregar barbearias no Imagens.vue:", e)
+    }
+})
 
 const categories = [
     'Show All',
@@ -74,11 +77,11 @@ const categories = [
 
 const selectedCategory = ref('Show All')
 
-// Este filtro ignora a cidade, ele olha apenas para a Categoria que o usuário clicou no menu (Clássico, Moderno, etc)
+// Filtragem dinâmica baseada na categoria selecionada
 const filteredImages = computed(() => {
   if (selectedCategory.value === 'Show All') {
-    return todasAsBarbearias
+    return todasAsBarbearias.value
   }
-  return todasAsBarbearias.filter(img => img.category === selectedCategory.value)
+  return todasAsBarbearias.value.filter(img => img.categoria === selectedCategory.value)
 })
 </script>
