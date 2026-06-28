@@ -22,8 +22,8 @@
             <div class="grid grid-cols-12 gap-6">
                 
                 <!-- Card Grande: A Inspiração (col-span-12) -->
-                <div class="col-span-12 bg-white rounded-xl p-6 lg:p-8 border border-gray-100 shadow-md">
-                    <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <div class="col-span-12 bg-white rounded-xl p-6 lg:p-8 border border-gray-100 shadow-md text-justify">
+                    <h2 class="text-xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
                         A Inspiração
                     </h2>
                     <p class="text-gray-600 text-sm leading-relaxed mb-4">
@@ -37,8 +37,8 @@
                 <!-- Card Médio: Missão (col-span-12 em mobile, col-span-6 em tablet/desktop) -->
                 <div class="col-span-12 md:col-span-6 bg-white rounded-xl p-6 border border-gray-100 shadow-md flex flex-col justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-                            Nossa Objetivo
+                        <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
+                            Nosso Objetivo
                         </h3>
                         <p class="text-gray-600 text-xs leading-relaxed">
                             Facilitar a conexão entre os barbeiros e seus clientes através de uma plataforma digital fluida, que valoriza o tempo de ambos os lados e eleva o padrão de atendimento no setor de estética masculina.
@@ -49,7 +49,7 @@
                 <!-- Card Médio: Visão (col-span-12 em mobile, col-span-6 em tablet/desktop) -->
                 <div class="col-span-12 md:col-span-6 bg-white rounded-xl p-6 border border-gray-100 shadow-md flex flex-col justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
                             Nossa Visão
                         </h3>
                         <p class="text-gray-600 text-xs leading-relaxed">
@@ -60,7 +60,7 @@
 
                 <!-- Card Inferior: Valores (col-span-12) -->
                 <div class="col-span-12 bg-white rounded-xl p-6 border border-gray-100 shadow-md">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex text-center items-center justify-center gap-2">
                         Nossos Valores
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">

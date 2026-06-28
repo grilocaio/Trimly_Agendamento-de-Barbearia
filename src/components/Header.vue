@@ -1,17 +1,17 @@
 <template>
     <header :class="[
-        'sticky top-0 z-50 w-full transition-transform duration-300',
+        'sticky top-0 z-30 w-full transition-transform duration-300',
         isHidden ? '-translate-y-full' : 'translate-y-0'
     ]">
-        <div class="bg-white border-b border-b-gray-200 lg:border-b-0 h-20 w-full lg:bg-black">
+        <div class="bg-black border-b border-b-gray-900 h-20 w-full">
             <div class="flex justify-between h-20 lg:grid grid-cols-12">
                 
                 <div class="hidden lg:flex items-center bg-gray-200 [clip-path:polygon(0_0,100%_0,75%_100%,0_100%)] h-20 pl-16 pr-8 w-auto col-span-2">
                     <img :src="logo" alt="imgTrimly" class="h-12 w-auto object-contain">
                 </div>
                 
-                <div class="flex items-center justify-center px-4 py-2 lg:hidden shrink-0 font-bold text-xl">
-                    Trimly
+                <div class="flex lg:hidden items-center bg-gray-200 [clip-path:polygon(0_0,100%_0,80%_100%,0_100%)] h-20 pl-6 pr-10 w-auto shrink-0">
+                    <img :src="logo" alt="imgTrimly" class="h-10 w-auto object-contain">
                 </div>
 
                 <nav class="hidden lg:flex items-center justify-center gap-8 col-span-8 text-white font-medium">
@@ -62,10 +62,10 @@
         </div>
     </header>
 
-    <div v-if="menuAberto" @click="fecharMenu" class="fixed inset-0 bg-black/50 z-20 lg:hidden"></div>
+    <div v-if="menuAberto" @click="fecharMenu" class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
 
     <aside :class="[
-        'fixed top-0 right-0 h-full w-64 bg-white text-black z-30 transition-transform lg:hidden',
+        'fixed top-0 right-0 h-full w-64 bg-white text-black z-50 transition-transform lg:hidden',
         menuAberto ? 'translate-x-0' : 'translate-x-full'
     ]">
         <div class="p-4">
