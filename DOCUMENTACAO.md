@@ -46,7 +46,7 @@ O Trimly foi refatorado seguindo uma arquitetura robusta dividida em camadas cla
 - **Cadastro Atualizado**: A opção de cadastro público como "Administrador" foi removida da tela de login por questões de segurança (agora é feita via suporte). Em seu lugar, foi incluída a opção "Barbeiro", que exige que ele selecione a barbearia inicial a qual deseja se afiliar no momento do registro.
 
 ### 5. Nova Tela de Parceria & Limpeza
-- **"Junte-se a Nós" (`src/views/JuntoSeNos.vue`)**: Nova tela com design premium e contatos de suporte de placeholder para divulgar a plataforma a novos donos de estabelecimentos. É acessível clicando no rodapé do site.
+- **"Junte-se a Nós" (`src/views/JunteSeNos.vue`)**: Nova tela com design premium e contatos de suporte de placeholder para divulgar a plataforma a novos donos de estabelecimentos. É acessível clicando no rodapé do site.
 - **Limpeza de Arquivos**: Os arquivos de componente inativos `src/views/AboutUs.vue` e `src/components/Breadcrumb.vue` foram removidos em definitivo do projeto.
 
 ---
@@ -97,5 +97,5 @@ A senha padrão para todas as contas abaixo é `123`:
 - `src/views/BarbeiroDashboard.vue` (Painel com agenda, agendamento como cliente e desvinculação)
 - `src/views/ClienteAgendamentos.vue` (Exibição de motivos e cancelamentos do cliente)
 - `src/views/PerfilUsuario.vue` (Editar perfil e exclusão de conta própria)
-- `src/views/JuntoSeNos.vue` (Nova tela de parceria)
+- `src/views/JunteSeNos.vue` (Nova tela de parceria)
 - `src/components/Footer.vue` (Atalho para a tela de parceria)

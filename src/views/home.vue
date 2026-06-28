@@ -67,7 +67,7 @@
   />
 
   <!-- Tela de Parceria / Junte-se Nós -->
-  <JuntoSeNos
+  <JunteSeNos
       v-if="telaAtual === 'junte_se'"
       @voltar="telaAtual = 'home'"
   />
@@ -122,7 +122,7 @@ import ClienteAgendamentos from '@/views/ClienteAgendamentos.vue';
 import AdminDashboard from '@/views/AdminDashboard.vue';
 import BarbeiroDashboard from '@/views/BarbeiroDashboard.vue';
 import PerfilUsuario from '@/views/PerfilUsuario.vue';
-import JuntoSeNos from '@/views/JuntoSeNos.vue'; // Nova tela de parceria
+import JunteSeNos from '@/views/JunteSeNos.vue'; // Nova tela de parceria
 import OrigemDoSite from '@/views/OrigemDoSite.vue';
 import Desenvolvedores from '@/views/Desenvolvedores.vue';
 import TermosDeServico from '@/views/TermosDeServico.vue';

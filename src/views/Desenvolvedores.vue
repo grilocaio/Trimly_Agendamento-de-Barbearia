@@ -29,9 +29,6 @@
                         </div>
                         <h3 class="text-lg font-bold text-gray-900 text-center">Caio Grilo</h3>
                         <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Estudante de ADS</p>
-                        <p class="text-gray-500 text-xs text-center mt-4 leading-relaxed">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis eaque aut, dolorem dicta voluptas modi! Nisi illo, eos aut accusamus, minima omnis doloribus necessitatibus magni cum minus animi libero voluptas.
-                        </p>
                     </div>
                     <div class="bg-gray-50 p-4 border-t flex justify-center gap-4 text-xs text-gray-400">
                         <span>GitHub: @grilocaio</span>
@@ -48,9 +45,6 @@
                         </div>
                         <h3 class="text-lg font-bold text-gray-900 text-center">Henrique Zaianz</h3>
                         <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Estudante de ADS</p>
-                        <p class="text-gray-500 text-xs text-center mt-4 leading-relaxed">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam ad expedita nulla libero voluptas quae dicta animi temporibus cum fuga, quibusdam eveniet consequatur error, mollitia tempore velit amet molestias assumenda.
-                        </p>
                     </div>
                     <div class="bg-gray-50 p-4 border-t flex justify-center gap-4 text-xs text-gray-400">
                         <span>GitHub: @henriqmz</span>
@@ -67,9 +61,6 @@
                         </div>
                         <h3 class="text-lg font-bold text-gray-900 text-center">Kawan Mesquita</h3>
                         <p class="text-xs text-red-700 font-semibold text-center uppercase tracking-wider mt-1">Estudante de ADS</p>
-                        <p class="text-gray-500 text-xs text-center mt-4 leading-relaxed">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam ad expedita nulla libero voluptas quae dicta animi temporibus cum fuga, quibusdam eveniet consequatur error, mollitia tempore velit amet molestias assumenda.
-                        </p>
                     </div>
                     <div class="bg-gray-50 p-4 border-t flex justify-center gap-4 text-xs text-gray-400">
                         <span>GitHub: @kawanmt</span>

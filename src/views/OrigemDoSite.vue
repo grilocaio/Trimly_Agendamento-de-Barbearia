@@ -65,17 +65,14 @@
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                         <div class="bg-gray-50 p-4 rounded-lg text-center">
-                            <span class="text-2xl block mb-2">🕒</span>
                             <h4 class="font-bold text-sm text-gray-800">Respeito ao Tempo</h4>
                             <p class="text-gray-500 text-[11px] mt-1">Acreditamos que pontualidade e organização são os pilares de um serviço de qualidade.</p>
                         </div>
                         <div class="bg-gray-50 p-4 rounded-lg text-center">
-                            <span class="text-2xl block mb-2">💻</span>
                             <h4 class="font-bold text-sm text-gray-800">Inovação Fluida</h4>
                             <p class="text-gray-500 text-[11px] mt-1">Tecnologia avançada apresentada através de interfaces limpas e acessíveis para todos.</p>
                         </div>
                         <div class="bg-gray-50 p-4 rounded-lg text-center">
-                            <span class="text-2xl block mb-2">💎</span>
                             <h4 class="font-bold text-sm text-gray-800">Excelência e Parceria</h4>
                             <p class="text-gray-500 text-[11px] mt-1">Crescemos junto com nossos estabelecimentos parceiros e seus profissionais de corte.</p>
                         </div>

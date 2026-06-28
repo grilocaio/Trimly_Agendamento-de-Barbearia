@@ -23,7 +23,7 @@
                         Como funciona a plataforma?
                     </h2>
                     <p class="text-sm text-gray-600 leading-relaxed">
-                        Descreva aqui como a barbearia pode utilizar o Trimly para gerenciar sua equipe, controlar fluxos de agendamentos diários, gerenciar serviços personalizados e expandir a sua base de clientes. O sistema fornece uma experiência fluida tanto para clientes quanto para barbeiros.
+                        Por meio do Trimly, cuidar do seu negócio pode ser ainda mais fácil! Nosso sistema permite que você verifique todos os agendamentos feitos na sua barbearia, gerencie sua equipe, e possui um suporte sempre pronto para te responder! O uso pelos seus clientes também será tranquilo! Com um sistema fácil de usar, todos ficarâo satisfeitos utilizando esse programa.
                     </p>
                 </div>
 
@@ -49,9 +49,9 @@
                         A criação de novas contas de <strong>Administrador de Barbearia</strong> é feita exclusivamente de forma interna pelo nosso time de suporte. Isso garante a validação do seu negócio e a segurança dos dados cadastrados no sistema.
                     </p>
                     <div class="pt-3 border-t border-red-200/50 flex flex-wrap gap-x-8 gap-y-2 text-xs text-red-950 font-bold">
-                        <div>✉️ E-mail: suporte@trimly.com.br</div>
-                        <div>📞 WhatsApp: (11) 99999-8888</div>
-                        <div>🕒 Atendimento: Seg a Sex, das 9h às 18h</div>
+                        <div>E-mail: trimlyagendamentos@gmail.com</div>
+                        <div>WhatsApp: 55 (12) 2128-5200</div>
+                        <div>Atendimento: Todos os dias, em horários variados</div>
                     </div>
                 </div>
 
