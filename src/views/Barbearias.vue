@@ -63,7 +63,8 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps, defineEmits } from 'vue';
+import { ref, computed, onMounted, defineProps, defineEmits } from 'vue';
+import { bookingService } from '@/services';
 
 const emit = defineEmits(['voltar', 'selecionarBarbearia']);
 
@@ -77,61 +78,28 @@ const props = defineProps({
 const abas = ['Show All', 'Clássico', 'Moderno', 'Visagismo'];
 const abaAtiva = ref('Show All');
 
-// Nosso "Banco de Dados" temporário de barbearias
-const todasAsBarbearias = [
-    { 
-        id: 1, 
-        nome: 'Mr Cutts', 
-        cidade: 'jacarei', 
-        categoria: 'Clássico', 
-        imagem: '/barbearias/jacarei/mrcutts.jpeg' 
-    },
-    { 
-        id: 2, 
-        nome: 'MW Barber Studio', 
-        cidade: 'jacarei', 
-        categoria: 'Moderno', 
-        imagem: '/barbearias/jacarei/mw barber studio.jpeg' 
-    },
-    { 
-        id: 3, 
-        nome: 'Visão Barbearia', 
-        cidade: 'jacarei', 
-        categoria: 'Visagismo', 
-        imagem: '/barbearias/jacarei/visão barbearia.jpeg' 
-    },
-    { 
-        id: 4, 
-        nome: 'Ocimar Hair Barbearia', 
-        cidade: 'sjc', 
-        categoria: 'Clássico', 
-        imagem: '/barbearias/sjc/ocimar hair.jpeg' 
-    },
-    { 
-        id: 5, 
-        nome: 'Kleber Rosa Barbearia', 
-        cidade: 'sjc', 
-        categoria: 'Moderno', 
-        imagem: 'barbearias/sjc/Kleber Rosa.jpeg' 
-    },
-    {
-        id: 6, 
-        nome: 'Santta Madre Barbearia', 
-        cidade: 'sjc', 
-        categoria: 'Moderno', 
-        imagem: 'barbearias/sjc/santta madre.jpeg' 
+// Estado reativo para armazenar as barbearias obtidas do repositório
+const todasAsBarbearias = ref([]);
+
+onMounted(async () => {
+    try {
+        // Carrega os dados reais e atualizados do banco local
+        todasAsBarbearias.value = await bookingService.getBarbearias();
+    } catch (e) {
+        console.error("Erro ao carregar barbearias no Barbearias.vue:", e);
     }
-];
+});
 
 // Mágica do Vue: Filtra as barbearias baseada na cidade selecionada E na aba clicada
 const barbeariasFiltradas = computed(() => {
-    return todasAsBarbearias.filter(barbearia => {
+    return todasAsBarbearias.value.filter(barbearia => {
         // 1. Verifica se a barbearia é da cidade que veio na prop
         const ehDaCidade = barbearia.cidade === props.cidade;
         
         // 2. Verifica se a categoria bate com a aba selecionada
         const ehDaCategoria = abaAtiva.value === 'Show All' || barbearia.categoria === abaAtiva.value;
         
+        // return ehDaCidade && ehDaCategoria;
         return ehDaCidade && ehDaCategoria;
     });
 });
