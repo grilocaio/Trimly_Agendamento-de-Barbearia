@@ -1,8 +1,6 @@
 import { UserFactory } from '../factories/UserFactory';
 
-/**
- * Serviço responsável por autenticação, registro, gerenciamento de perfil e sessão de usuários.
- */
+
 export class AuthService {
     constructor(userRepository, bookingRepository = null) {
         this.userRepository = userRepository;
@@ -10,10 +8,9 @@ export class AuthService {
     }
 
     /**
-     * Realiza o login de um usuário, validando credenciais e persistindo a sessão.
-     * @param {string} email - E-mail do usuário.
-     * @param {string} password - Senha do usuário.
-     * @returns {Promise<Object>} Dados do usuário logado.
+     * @param {string} email
+     * @param {string} password
+     * @returns {Promise<Object>}
      */
     async login(email, password) {
         if (!email || !password) {
@@ -25,15 +22,13 @@ export class AuthService {
             throw new Error("E-mail ou senha incorretos!");
         }
 
-        // Persiste a sessão localmente
         localStorage.setItem('trimly_logado_user', JSON.stringify(user));
-        localStorage.setItem('trimly_logado', user.nome); // Legado para compatibilidade
+        localStorage.setItem('trimly_logado', user.nome);
 
         return user;
     }
 
     /**
-     * Encerra a sessão ativa do usuário limpando o LocalStorage.
      * @returns {Promise<void>}
      */
     async logout() {
@@ -42,8 +37,7 @@ export class AuthService {
     }
 
     /**
-     * Obtém os dados do usuário atualmente logado.
-     * @returns {Object|null} Usuário logado ou null se não houver sessão ativa.
+     * @returns {Object|null}
      */
     getCurrentUser() {
         const userJson = localStorage.getItem('trimly_logado_user');
@@ -58,9 +52,8 @@ export class AuthService {
     }
 
     /**
-     * Registra um novo usuário no sistema.
-     * @param {Object} dados - Contém nome, email, senha, telefone, cargo e barbeariaId.
-     * @returns {Promise<Object>} Usuário recém-criado.
+     * @param {Object} dados
+     * @returns {Promise<Object>}
      */
     async register({ nome, email, senha, telefone, cargo, barbeariaId }) {
         if (cargo === 'Administrador' && !barbeariaId) {
@@ -85,10 +78,9 @@ export class AuthService {
     }
 
     /**
-     * Atualiza os dados cadastrais e de senha do perfil do usuário ativo.
-     * @param {number} userId - ID do usuário.
-     * @param {Object} dados - Contém telefone, senhaAtual e novaSenha.
-     * @returns {Promise<Object>} Usuário atualizado.
+     * @param {number} userId
+     * @param {Object} dados
+     * @returns {Promise<Object>}
      */
     async updateProfile(userId, { telefone, senhaAtual, novaSenha }) {
         const users = await this.userRepository.getUsuarios();
@@ -113,7 +105,6 @@ export class AuthService {
 
         const updatedUser = await this.userRepository.updateUser(user);
 
-        // Atualiza a sessão ativa
         localStorage.setItem('trimly_logado_user', JSON.stringify(updatedUser));
         localStorage.setItem('trimly_logado', updatedUser.nome);
 
@@ -121,15 +112,11 @@ export class AuthService {
     }
 
     /**
-     * Exclui permanentemente a conta de um usuário.
-     * Se o usuário excluído for o que está logado atualmente, encerra a sessão ativa.
-     * @param {number} userId - ID do usuário a ser excluído.
+     * @param {number} userId
      * @returns {Promise<void>}
      */
     async deleteAccount(userId) {
         const currentUser = this.getCurrentUser();
-        
-        // Se a conta a ser excluída for de um cliente, cancelamos preventivamente todos os seus agendamentos ativos
         const users = await this.userRepository.getUsuarios();
         const user = users.find(u => Number(u.id) === Number(userId));
         if (user && user.cargo === 'Cliente' && this.bookingRepository) {

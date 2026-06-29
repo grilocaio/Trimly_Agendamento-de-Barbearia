@@ -75,7 +75,7 @@
 <script setup>
 import { ref, defineEmits } from 'vue';
 import Button from '@/components/Button.vue';
-import trimlybarber from '@/assets/trimlybarber.png'; // Confirme se o nome da imagem está certo
+import trimlybarber from '@/assets/trimlybarber.png'; 
 
 const emit = defineEmits(['buscar']);
 

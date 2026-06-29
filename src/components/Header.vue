@@ -18,7 +18,7 @@
                     <a href="#" @click.prevent="$emit('navegar', 'home')" class="hover:text-red-800 transition-colors cursor-pointer">Home</a>
                     <a href="#" @click.prevent="$emit('navegar', 'Barbearias')" class="hover:text-red-800 transition-colors cursor-pointer">Barbearias</a>
                     
-                    <!-- Links específicos baseados no Cargo -->
+                
                     <template v-if="usuario">
                         <a v-if="usuario.cargo === 'Cliente'" href="#" @click.prevent="$emit('navegar', 'client_agendamentos')" class="hover:text-red-800 transition-colors cursor-pointer">Meus Agendamentos</a>
                         <a v-if="usuario.cargo === 'Administrador'" href="#" @click.prevent="$emit('navegar', 'admin_dashboard')" class="hover:text-amber-500 transition-colors cursor-pointer text-amber-400 font-bold">★ Painel Admin</a>
@@ -102,7 +102,7 @@ import logo from '@/assets/imgTrimly.png';
 import Button from './Button.vue';
 
 const props = defineProps({
-    usuario: Object // Pode ser String (legado) ou Object completo
+    usuario: Object
 });
 
 const emit = defineEmits(['abrirLogin', 'sair', 'navegar']);
@@ -121,7 +121,6 @@ function fecharMenu() {
 function handleScroll() {
     const currentScrollY = window.scrollY;
     
-    // Mantém sempre visível se estiver muito próximo ao topo
     if (currentScrollY <= 50) {
         isHidden.value = false;
         lastScrollY = currentScrollY;
@@ -129,10 +128,8 @@ function handleScroll() {
     }
 
     if (currentScrollY > lastScrollY) {
-        // Deslizar para baixo -> Esconder Header
         isHidden.value = true;
     } else {
-        // Deslizar para cima -> Mostrar Header
         isHidden.value = false;
     }
     lastScrollY = currentScrollY;
@@ -145,4 +142,4 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
 });
-</script>
+</script>

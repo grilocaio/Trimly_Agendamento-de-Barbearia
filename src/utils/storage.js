@@ -133,7 +133,6 @@ export function getBarbearias() {
 }
 
 /**
- * Salva a lista de barbearias no LocalStorage.
  * @param {Array} barbearias - Lista completa de barbearias.
  */
 export function saveBarbearias(barbearias) {
@@ -145,7 +144,6 @@ export function getCortes() {
 }
 
 /**
- * Salva a lista de cortes (serviços) no LocalStorage.
  * @param {Array} cortes - Lista completa de cortes.
  */
 export function saveCortes(cortes) {

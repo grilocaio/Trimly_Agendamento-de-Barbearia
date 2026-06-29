@@ -56,12 +56,10 @@ import { bookingService } from '@/services'
 
 const emit = defineEmits(['verBarbearia']);
 
-// Estado reativo para armazenar as barbearias obtidas do repositório
 const todasAsBarbearias = ref([])
 
 onMounted(async () => {
     try {
-        // Carrega os dados reais e atualizados do banco local
         todasAsBarbearias.value = await bookingService.getBarbearias()
     } catch (e) {
         console.error("Erro ao carregar barbearias no Imagens.vue:", e)
@@ -77,7 +75,6 @@ const categories = [
 
 const selectedCategory = ref('Show All')
 
-// Filtragem dinâmica baseada na categoria selecionada
 const filteredImages = computed(() => {
   if (selectedCategory.value === 'Show All') {
     return todasAsBarbearias.value

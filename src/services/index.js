@@ -17,8 +17,6 @@ import {
 import { AuthService } from './AuthService';
 import { BookingService } from './BookingService';
 
-// Alternador de persistência (SOLID Dependency Inversion)
-// Define se o sistema usará as chamadas HTTP para o MySQL ou o LocalStorage local
 const USE_API = false; 
 
 const userRepository = USE_API ? new ApiUserRepository() : new LocalStorageUserRepository();

@@ -1,16 +1,4 @@
-// ============================================================================
-// DESIGN PATTERN: STRATEGY (ESTRATÉGIA)
-// ============================================================================
-// Este arquivo implementa o padrão de projeto Strategy. Ele permite encapsular
-// algoritmos e comportamentos específicos de cada nível de acesso (cargo) em 
-// classes isoladas e intercambiáveis.
-//
-// Benefício principal: Evita o acúmulo de estruturas condicionais complexas 
-// (ex: múltiplos "if (cargo === 'Administrador')") espalhadas pelas views, 
-// facilitando a manutenção e a extensão do sistema para novos cargos no futuro.
-// ============================================================================
 
-// Estratégia específica para usuários do tipo 'Cliente'
 export class ClientRoleStrategy {
     getDashboardView() {
         return 'home'; // Clientes ficam na home e agendam por lá
@@ -26,7 +14,6 @@ export class ClientRoleStrategy {
     }
 }
 
-// Estratégia específica para usuários do tipo 'Barbeiro'
 export class BarberRoleStrategy {
     getDashboardView() {
         return 'barbeiro_dashboard'; // Barbeiros são direcionados ao seu painel de agenda
@@ -42,7 +29,6 @@ export class BarberRoleStrategy {
     }
 }
 
-// Estratégia específica para usuários do tipo 'Administrador'
 export class AdminRoleStrategy {
     getDashboardView() {
         return 'admin_dashboard'; // Administradores são direcionados ao controle de equipe/serviços
@@ -58,10 +44,8 @@ export class AdminRoleStrategy {
     }
 }
 
-// Contexto que resolve a estratégia adequada baseado no cargo do usuário logado
 export class RoleStrategyContext {
     /**
-     * Retorna a instância da estratégia correspondente ao cargo do usuário.
      * @param {string} cargo - O cargo do usuário logado ('Cliente', 'Barbeiro', 'Administrador').
      * @returns {Object} A classe correspondente que implementa as permissões.
      */
@@ -74,7 +58,6 @@ export class RoleStrategyContext {
             case 'Administrador':
                 return new AdminRoleStrategy();
             default:
-                // Estratégia nula/padrão para usuários deslogados ou visitantes anônimos
                 return {
                     getDashboardView() { return 'home'; },
                     hasAccessToAdmin() { return false; },

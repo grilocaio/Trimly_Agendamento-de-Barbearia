@@ -1,3 +1,5 @@
+// Esse código será usado depois.
+
 import { IUserRepository, IBookingRepository, IBarbeariaRepository, ICorteRepository, IHorarioRepository } from './BaseRepository';
 
 const API_BASE_URL = 'http://localhost:3000/api';
