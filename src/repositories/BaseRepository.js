@@ -50,6 +50,11 @@ export class IBookingRepository {
 
 export class IBarbeariaRepository {
     async getBarbearias() { throw new Error("Método não implementado"); }
+
+    /**
+     * @param {Object} barbearia
+     */
+    async createBarbearia(barbearia) { throw new Error("Método não implementado"); }
     
     /**
      * @param {number} id

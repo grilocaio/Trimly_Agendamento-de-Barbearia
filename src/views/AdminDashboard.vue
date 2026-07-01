@@ -212,7 +212,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Telefone / WhatsApp</label>
-                            <input required type="tel" v-model="formBarbeiro.telefone" placeholder="Ex: 11999999999"
+                            <input required type="tel" :value="formBarbeiro.telefone" @input="formBarbeiro.telefone = applyPhoneMask($event.target.value)" placeholder="Ex: 11999999999"
                                 class="w-full px-3 py-2.5 border rounded-lg text-sm focus:ring-1 focus:ring-red-500 focus:outline-none bg-white">
                         </div>
                         <button type="submit" class="w-full py-3 bg-black hover:bg-red-800 transition-colors text-white font-bold rounded-lg text-xs cursor-pointer shadow">
@@ -360,7 +360,7 @@
                         ⚙️ Rebranding (Editar Dados da Barbearia)
                     </h2>
                     
-                    <form @submit.prevent="salvarDadosBarbearia" class="max-w-xl space-y-4">
+                    <form @submit.prevent="salvarDadosBarbearia" class="max-w-2xl space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Nome da Barbearia</label>
@@ -375,15 +375,72 @@
                                 </select>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Categoria (Estilos)</label>
-                            <input required type="text" v-model="formConfigBarbearia.categoria" placeholder="Ex: Clássico, Moderno, Visagismo"
-                                class="w-full px-3 py-2.5 border rounded-lg text-sm focus:ring-1 focus:ring-red-500 focus:outline-none bg-white">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">CEP</label>
+                                <input required type="text" v-model="formConfigBarbearia.cep" placeholder="12345-678"
+                                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:ring-1 focus:ring-red-500 focus:outline-none bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Número</label>
+                                <input required type="text" v-model="formConfigBarbearia.num" placeholder="100"
+                                    class="w-full px-3 py-2.5 border rounded-lg text-sm bg-white">
+                            </div>
                         </div>
-                        <button type="submit" class="py-2.5 px-6 bg-black hover:bg-red-800 transition-colors text-white font-bold rounded-lg text-xs cursor-pointer shadow">
-                            Salvar Alterações
-                        </button>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Rua</label>
+                                <input required type="text" v-model="formConfigBarbearia.rua" placeholder="Rua das Flores"
+                                    class="w-full px-3 py-2.5 border rounded-lg text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Bairro</label>
+                                <input required type="text" v-model="formConfigBarbearia.bairro" placeholder="Centro"
+                                    class="w-full px-3 py-2.5 border rounded-lg text-sm bg-white">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Estado</label>
+                                <input required type="text" v-model="formConfigBarbearia.estado" maxlength="2" placeholder="SP"
+                                    class="w-full px-3 py-2.5 border rounded-lg text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Categoria (Estilos)</label>
+                                <input required type="text" v-model="formConfigBarbearia.categoria" placeholder="Ex: Clássico, Moderno, Visagismo"
+                                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:ring-1 focus:ring-red-500 focus:outline-none bg-white">
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-3">
+                            <button type="submit" class="py-2.5 px-6 bg-black hover:bg-red-800 transition-colors text-white font-bold rounded-lg text-xs cursor-pointer shadow">
+                                {{ modoEdicaoBarbearia ? 'Atualizar Barbearia' : 'Criar Barbearia' }}
+                            </button>
+                            <button type="button" @click="resetarFormularioBarbearia" class="py-2.5 px-6 border border-gray-300 text-gray-700 font-bold rounded-lg text-xs cursor-pointer">
+                                Limpar
+                            </button>
+                        </div>
                     </form>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
+                    <h2 class="text-xl font-bold text-gray-900 border-b pb-4 mb-6">
+                        🧾 Gerenciar Barbearias Cadastradas
+                    </h2>
+                    <div v-if="barbeariasDisponiveis.length === 0" class="text-sm text-gray-500">
+                        Nenhuma barbearia cadastrada ainda.
+                    </div>
+                    <div v-else class="space-y-3">
+                        <div v-for="b in barbeariasDisponiveis" :key="b.id" class="border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <p class="font-bold text-gray-900">{{ b.nome }}</p>
+                                <p class="text-xs text-gray-500">{{ b.cidade || '-' }} · {{ b.categoria || '-' }}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" @click="preencherFormularioBarbearia(b)" class="px-3 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white cursor-pointer">Editar</button>
+                                <button type="button" @click="removerBarbeariaDoSistema(b.id)" class="px-3 py-2 text-xs font-bold rounded-lg bg-red-600 text-white cursor-pointer">Excluir</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Danger Zone: Encerrar Barbearia -->
@@ -417,6 +474,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, defineProps, defineEmits } from 'vue';
 import { authService, bookingService } from '@/services';
+import { applyPhoneMask } from '@/utils/phoneMask';
 
 const props = defineProps({
     usuarioLogado: Object
@@ -466,8 +524,16 @@ const formConfigBarbearia = reactive({
     id: null,
     nome: '',
     cidade: '',
-    categoria: ''
+    categoria: '',
+    cep: '',
+    num: '',
+    rua: '',
+    bairro: '',
+    estado: ''
 });
+
+const modoEdicaoBarbearia = ref(false);
+const barbeariasDisponiveis = ref([]);
 
 // Computados
 const dataMinima = computed(() => {
@@ -495,6 +561,7 @@ onMounted(async () => {
     try {
         // Pegar nome da barbearia
         const barbearias = await bookingService.getBarbearias();
+        barbeariasDisponiveis.value = barbearias;
         const b = barbearias.find(x => x.id === Number(props.usuarioLogado.barbeariaId));
         if (b) {
             barbeariaNome.value = b.nome;
@@ -735,15 +802,104 @@ async function excluirCorte(corte) {
 // Ação: Salvar edições cadastrais da barbearia (rebranding)
 async function salvarDadosBarbearia() {
     try {
-        const updated = await bookingService.editarBarbearia({
-            id: formConfigBarbearia.id,
-            nome: formConfigBarbearia.nome,
-            cidade: formConfigBarbearia.cidade,
-            categoria: formConfigBarbearia.categoria
-        });
-        
-        barbeariaNome.value = updated.nome;
-        alert("Dados da barbearia alterados com sucesso!");
+        if (modoEdicaoBarbearia.value && formConfigBarbearia.id) {
+            const updated = await bookingService.editarBarbearia({
+                id: formConfigBarbearia.id,
+                nome: formConfigBarbearia.nome,
+                cidade: formConfigBarbearia.cidade,
+                categoria: formConfigBarbearia.categoria,
+                cep: formConfigBarbearia.cep,
+                num: formConfigBarbearia.num,
+                rua: formConfigBarbearia.rua,
+                bairro: formConfigBarbearia.bairro,
+                estado: formConfigBarbearia.estado
+            });
+            barbeariaNome.value = updated.nome;
+            alert("Dados da barbearia atualizados com sucesso!");
+        } else {
+            const created = await bookingService.criarBarbearia({
+                nome: formConfigBarbearia.nome,
+                cidade: formConfigBarbearia.cidade,
+                categoria: formConfigBarbearia.categoria,
+                cep: formConfigBarbearia.cep,
+                num: formConfigBarbearia.num,
+                rua: formConfigBarbearia.rua,
+                bairro: formConfigBarbearia.bairro,
+                estado: formConfigBarbearia.estado
+            });
+
+            formConfigBarbearia.id = created.id;
+            barbeariaNome.value = created.nome;
+
+            if (props.usuarioLogado?.id) {
+                try {
+                    const usuarioAtualizado = await authService.userRepository.updateUser({
+                        id: props.usuarioLogado.id,
+                        nome: props.usuarioLogado.nome,
+                        email: props.usuarioLogado.email,
+                        senha: props.usuarioLogado.senha,
+                        telefone: props.usuarioLogado.telefone || '',
+                        cargo: props.usuarioLogado.cargo,
+                        barbeariaId: Number(created.id)
+                    });
+
+                    props.usuarioLogado.barbeariaId = Number(created.id);
+                    localStorage.setItem('trimly_logado_user', JSON.stringify(usuarioAtualizado));
+                    localStorage.setItem('trimly_logado', usuarioAtualizado.nome || props.usuarioLogado.nome);
+                    emit('atualizarSessao');
+                } catch (assocError) {
+                    console.error('Erro ao associar o administrador à nova barbearia:', assocError);
+                }
+            }
+
+            alert("Barbearia criada com sucesso!");
+        }
+
+        resetarFormularioBarbearia();
+        await carregarDados();
+        const barbearias = await bookingService.getBarbearias();
+        barbeariasDisponiveis.value = barbearias;
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+function resetarFormularioBarbearia() {
+    modoEdicaoBarbearia.value = false;
+    formConfigBarbearia.id = null;
+    formConfigBarbearia.nome = '';
+    formConfigBarbearia.cidade = '';
+    formConfigBarbearia.categoria = '';
+    formConfigBarbearia.cep = '';
+    formConfigBarbearia.num = '';
+    formConfigBarbearia.rua = '';
+    formConfigBarbearia.bairro = '';
+    formConfigBarbearia.estado = '';
+}
+
+function preencherFormularioBarbearia(barbearia) {
+    modoEdicaoBarbearia.value = true;
+    formConfigBarbearia.id = barbearia.id;
+    formConfigBarbearia.nome = barbearia.nome;
+    formConfigBarbearia.cidade = barbearia.cidade || '';
+    formConfigBarbearia.categoria = barbearia.categoria || '';
+    formConfigBarbearia.cep = barbearia.cep || '';
+    formConfigBarbearia.num = barbearia.num || '';
+    formConfigBarbearia.rua = barbearia.rua || '';
+    formConfigBarbearia.bairro = barbearia.bairro || '';
+    formConfigBarbearia.estado = barbearia.estado || '';
+}
+
+async function removerBarbeariaDoSistema(id) {
+    if (!confirm("Tem certeza de que deseja excluir esta barbearia?")) {
+        return;
+    }
+
+    try {
+        await bookingService.removerBarbearia(id);
+        alert("Barbearia removida com sucesso.");
+        const barbearias = await bookingService.getBarbearias();
+        barbeariasDisponiveis.value = barbearias;
         await carregarDados();
     } catch (error) {
         alert(error.message);

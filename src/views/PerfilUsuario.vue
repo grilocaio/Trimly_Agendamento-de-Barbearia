@@ -31,7 +31,7 @@
                 <!-- Campo Telefone (Editável) -->
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Telefone / WhatsApp</label>
-                    <input required type="tel" v-model="form.telefone" placeholder="Ex: 11999999999"
+                    <input required type="tel" :value="form.telefone" @input="form.telefone = applyPhoneMask($event.target.value)" placeholder="Ex: 11999999999"
                         class="w-full px-3 py-2.5 border rounded-lg text-sm focus:ring-1 focus:ring-red-500 focus:outline-none bg-white text-gray-900">
                 </div>
 
@@ -93,6 +93,7 @@
 <script setup>
 import { ref, reactive, onMounted, defineProps, defineEmits } from 'vue';
 import { authService } from '@/services';
+import { applyPhoneMask } from '@/utils/phoneMask';
 
 const props = defineProps({
     usuarioLogado: Object

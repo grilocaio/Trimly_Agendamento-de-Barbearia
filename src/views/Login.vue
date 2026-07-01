@@ -39,7 +39,7 @@
                     <input type="text" required v-model="cadNome" placeholder="Seu Nome Completo"
                         class="appearance-none rounded block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
                     
-                    <input type="tel" required v-model="cadTelefone" placeholder="Telefone / WhatsApp"
+                    <input type="tel" required :value="cadTelefone" @input="cadTelefone = applyPhoneMask($event.target.value)" placeholder="Telefone / WhatsApp" maxlength="15"
                         class="appearance-none rounded block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
                     
                     <input type="email" required v-model="cadEmail" placeholder="Seu E-mail"
@@ -82,6 +82,7 @@
 <script setup>
 import { ref, onMounted, defineEmits } from 'vue';
 import { authService, bookingService } from '@/services';
+import { applyPhoneMask } from '@/utils/phoneMask';
 
 const emit = defineEmits(['voltar', 'loginSucesso']);
 
@@ -147,4 +148,4 @@ async function fazerLogin() {
         alert(error.message);
     }
 }
-</script>
+</script>

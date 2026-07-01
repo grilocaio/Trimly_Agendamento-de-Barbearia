@@ -46,6 +46,7 @@
       v-if="telaAtual === 'admin_dashboard' && usuarioLogado && usuarioLogado.cargo === 'Administrador'"
       :usuarioLogado="usuarioLogado"
       @voltar="telaAtual = 'home'"
+      @atualizarSessao="carregarUsuarioLogado"
   />
 
   <!-- Painel do Barbeiro -->

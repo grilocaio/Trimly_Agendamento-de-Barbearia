@@ -229,4 +229,15 @@ export class BookingService {
         }
         return await this.barbeariaRepository.updateBarbearia(barbearia);
     }
+
+    async criarBarbearia(dados) {
+        if (!dados.nome || !dados.cep || !dados.num || !dados.rua || !dados.bairro || !dados.cidade || !dados.estado) {
+            throw new Error("Preencha todos os campos da barbearia.");
+        }
+        return await this.barbeariaRepository.createBarbearia(dados);
+    }
+
+    async removerBarbearia(id) {
+        return await this.barbeariaRepository.deleteBarbearia(id);
+    }
 }

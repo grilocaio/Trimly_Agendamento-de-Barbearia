@@ -156,6 +156,14 @@ export class LocalStorageBarbeariaRepository extends IBarbeariaRepository {
         return getBarbearias();
     }
 
+    async createBarbearia(barbearia) {
+        const barbearias = getBarbearias();
+        const nova = { id: Date.now(), ...barbearia };
+        barbearias.push(nova);
+        saveBarbearias(barbearias);
+        return nova;
+    }
+
     async deleteBarbearia(id) {
         const barbearias = getBarbearias();
         const filtered = barbearias.filter(b => Number(b.id) !== Number(id));

@@ -17,10 +17,7 @@ export class AuthService {
             throw new Error("E-mail e senha são obrigatórios!");
         }
 
-        const user = await this.userRepository.findByEmail(email);
-        if (!user || user.senha !== password) {
-            throw new Error("E-mail ou senha incorretos!");
-        }
+        const user = await this.userRepository.login(email, password);
 
         localStorage.setItem('trimly_logado_user', JSON.stringify(user));
         localStorage.setItem('trimly_logado', user.nome);
@@ -28,10 +25,8 @@ export class AuthService {
         return user;
     }
 
-    /**
-     * @returns {Promise<void>}
-     */
     async logout() {
+        await this.userRepository.logout();
         localStorage.removeItem('trimly_logado_user');
         localStorage.removeItem('trimly_logado');
     }

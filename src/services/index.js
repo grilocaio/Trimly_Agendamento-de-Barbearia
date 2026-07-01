@@ -17,7 +17,7 @@ import {
 import { AuthService } from './AuthService';
 import { BookingService } from './BookingService';
 
-const USE_API = false; 
+const USE_API = true; 
 
 const userRepository = USE_API ? new ApiUserRepository() : new LocalStorageUserRepository();
 const bookingRepository = USE_API ? new ApiBookingRepository() : new LocalStorageBookingRepository();
